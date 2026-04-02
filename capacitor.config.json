@@ -1,0 +1,6 @@
+{
+  "appId": "ca.kimiapro.kpitracker",
+  "appName": "KimiaPro KPI Tracker",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
