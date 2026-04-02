@@ -1,0 +1,4603 @@
+<!DOCTYPE html>
+<!--
+  KimiaPro Project KPI Tracker
+  Copyright (c) 2026 KimiaPro. All rights reserved.
+
+  License notice:
+  This file is licensed, not sold. Purchase grants the end user a non-exclusive,
+  non-transferable right to use this tool for personal or internal business use.
+  Redistribution, resale, sublicensing, public reposting, reverse engineering for
+  commercial reuse, or removal of proprietary notices is prohibited except where
+  applicable law does not allow such restriction.
+
+  Disclaimer:
+  This tool is provided "as is" without warranties of any kind. Users remain solely
+  responsible for reviewing outputs, assumptions, thresholds, project decisions,
+  and compliance with their own commercial, financial, legal, engineering, and
+  contractual requirements.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#0f766e" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./assets/icons/icon-180.png" />
+  <title>KimiaPro Project KPI Tracker</title>
+  <meta name="copyright" content="Copyright (c) 2026 KimiaPro. All rights reserved." />
+  <meta name="author" content="KimiaPro" />
+  <meta name="robots" content="noarchive" />
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --accent: #0f766e;
+      --ok: #15803d;
+      --warn: #ca8a04;
+      --bad: #b91c1c;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, var(--bg) 100%);
+      color: var(--text);
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body.dark-mode {
+      --bg: #0f172a;
+      --card: #111827;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --line: #334155;
+      --shadow: 0 12px 34px rgba(2, 6, 23, 0.42);
+      background: linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
+    }
+
+    body.dark-mode .card,
+    body.dark-mode .kpi-strip,
+    body.dark-mode .project-manager,
+    body.dark-mode .dashboard-kpi,
+    body.dark-mode .dashboard-table-wrap,
+    body.dark-mode .history-panel,
+    body.dark-mode .chart-card,
+    body.dark-mode .compare-block,
+    body.dark-mode .variance-block,
+    body.dark-mode .risk-block,
+    body.dark-mode .help-panel,
+    body.dark-mode .line-chart,
+    body.dark-mode .trend-pill,
+    body.dark-mode .kpi,
+    body.dark-mode .variance-card,
+    body.dark-mode .risk-card,
+    body.dark-mode .history-item,
+    body.dark-mode .row-note,
+    body.dark-mode .dashboard-load-btn,
+    body.dark-mode .project-btn,
+    body.dark-mode .help-card,
+    body.dark-mode .summary-item,
+    body.dark-mode .compare-track,
+    body.dark-mode .chart-wrap,
+    body.dark-mode .dashboard-table th,
+    body.dark-mode .dashboard-table td {
+      background: #111827;
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    body.dark-mode .dashboard-table th,
+    body.dark-mode .dashboard-table tbody tr:hover,
+    body.dark-mode .chart-wrap,
+    body.dark-mode .kpi,
+    body.dark-mode .dashboard-kpi,
+    body.dark-mode .history-item,
+    body.dark-mode .line-chart,
+    body.dark-mode .variance-card,
+    body.dark-mode .risk-card,
+    body.dark-mode .trend-pill,
+    body.dark-mode .help-card,
+    body.dark-mode .compare-block {
+      background: linear-gradient(180deg, #111827, #0f172a);
+    }
+
+    body.dark-mode .kpi-strip {
+      background: rgba(17, 24, 39, 0.96);
+    }
+
+    body.dark-mode input,
+    body.dark-mode select,
+    body.dark-mode textarea {
+      background: #0b1220;
+      color: #f8fafc;
+      border-color: #475569;
+    }
+
+    body.dark-mode .input-manual {
+      background: #172554;
+      border-color: #3b82f6;
+      color: #eff6ff;
+    }
+
+    body.dark-mode .input-auto {
+      background: #1f2937;
+      border-color: #475569;
+      color: #f8fafc;
+    }
+
+    body.dark-mode input::placeholder,
+    body.dark-mode textarea::placeholder {
+      color: #94a3b8;
+    }
+
+    body.dark-mode label,
+    body.dark-mode .kpi .label,
+    body.dark-mode .chart-label,
+    body.dark-mode .dashboard-kpi .d-label,
+    body.dark-mode .compare-label,
+    body.dark-mode .compare-sub,
+    body.dark-mode .variance-card .v-label,
+    body.dark-mode .variance-card .v-sub,
+    body.dark-mode .risk-card .r-label,
+    body.dark-mode .risk-card .r-sub,
+    body.dark-mode .trend-pill .t-label,
+    body.dark-mode .summary-item .s-label,
+    body.dark-mode .muted-note,
+    body.dark-mode .dashboard-note,
+    body.dark-mode .pm-label,
+    body.dark-mode .pm-note,
+    body.dark-mode .kpi-strip-title,
+    body.dark-mode .history-item .row-sub,
+    body.dark-mode .dashboard-table th,
+    body.dark-mode .help-card p {
+      color: var(--muted);
+    }
+
+    body.dark-mode .kpi .value,
+    body.dark-mode .chart-value,
+    body.dark-mode .trend-pill .t-value,
+    body.dark-mode .summary-item .s-value,
+    body.dark-mode .dashboard-kpi .d-value,
+    body.dark-mode .dashboard-table td,
+    body.dark-mode .help-card h4,
+    body.dark-mode .history-item .row-top,
+    body.dark-mode .compare-title,
+    body.dark-mode .compare-value,
+    body.dark-mode .risk-head h3,
+    body.dark-mode .dashboard-head h2,
+    body.dark-mode .card h2,
+    body.dark-mode .card h3 {
+      color: #f8fafc;
+    }
+
+    body.dark-mode .progress {
+      background: #334155;
+    }
+
+    body.dark-mode .bar-shell,
+    body.dark-mode .report-mini-shell {
+      background: linear-gradient(180deg, #1f2937, #334155);
+    }
+
+    body.dark-mode .compare-track {
+      background: #334155;
+    }
+
+    body.dark-mode .dashboard-table-wrap,
+    body.dark-mode .history-panel,
+    body.dark-mode .line-chart,
+    body.dark-mode .compare-block,
+    body.dark-mode .variance-block,
+    body.dark-mode .risk-block,
+    body.dark-mode .help-panel,
+    body.dark-mode .project-manager,
+    body.dark-mode .dashboard-kpi,
+    body.dark-mode .kpi,
+    body.dark-mode .card {
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      box-shadow: 0 18px 36px rgba(2, 6, 23, 0.38);
+    }
+
+    body.dark-mode .project-manager::before {
+      background: linear-gradient(180deg, rgba(45,212,191,0.9), rgba(96,165,250,0.65));
+    }
+
+    body.dark-mode .dashboard-kpi:hover,
+    body.dark-mode .kpi:hover,
+    body.dark-mode .trend-pill:hover,
+    body.dark-mode .kpi-chip:hover {
+      box-shadow: 0 18px 30px rgba(2, 6, 23, 0.42);
+    }
+
+    body.dark-mode .screen-btn.active,
+    body.dark-mode .screen-btn:hover {
+      background: rgba(255,255,255,0.22);
+      color: #ffffff;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 12px 16px 24px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0f766e, #2563eb 55%, #7c3aed 100%);
+      color: white;
+      border-radius: 20px;
+      padding: 12px 14px;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+      margin-bottom: 10px;
+      position: sticky;
+      top: 8px;
+      z-index: 1000;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .hero p {
+      margin: 2px 0 0;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.3;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+      position: relative;
+    }
+
+    
+
+    .brand-meta h1 {
+      margin: 0 0 4px;
+    }
+
+    .brand-kicker {
+      margin: 0;
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.72);
+    }
+
+    .hero-subline {
+      margin-top: 6px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.84);
+      position: relative;
+      z-index: 1;
+    }
+
+    .top-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 10px 0 14px;
+      flex-wrap: wrap;
+    }
+
+    .top-nav .screen-btn {
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      color: var(--text);
+      border: 1px solid #dbe4ea;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+    }
+
+    .top-nav .screen-btn.active {
+      background: linear-gradient(135deg, #0f766e, #2563eb);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.22);
+    }
+
+    body.dark-mode .top-nav .screen-btn {
+      background: linear-gradient(180deg, #111827, #0f172a);
+      color: #e5e7eb;
+      border-color: #334155;
+      box-shadow: 0 10px 20px rgba(2, 6, 23, 0.28);
+    }
+
+    body.dark-mode .top-nav .screen-btn.active {
+      background: linear-gradient(135deg, #0f766e, #2563eb);
+      color: white;
+      border-color: transparent;
+    }
+
+    .tool-launcher {
+      position: relative;
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.22);
+      background: linear-gradient(135deg, #0f766e, #2563eb 60%, #7c3aed);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.16);
+      z-index: 2;
+      flex: 0 0 46px;
+    }
+
+    .tool-pop {
+      position: absolute;
+      left: 0;
+      top: calc(100% + 10px);
+      width: min(320px, calc(100vw - 36px));
+      border-radius: 20px;
+      border: 1px solid rgba(148,163,184,0.22);
+      background: rgba(255,255,255,0.94);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 26px 60px rgba(15, 23, 42, 0.18);
+      padding: 14px;
+      display: none;
+      z-index: 1140;
+    }
+
+    .tool-pop.open { display: block; }
+
+    .tool-pop-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .tool-pop-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text);
+      margin: 0 0 4px;
+    }
+
+    .tool-pop-sub {
+      font-size: 0.76rem;
+      color: var(--muted);
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .tool-pop-close {
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
+      min-height: 34px;
+      border-radius: 999px;
+      border: 1px solid #dbe4ea;
+      background: #ffffff;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .tool-pop .tool-btn {
+      width: 100%;
+      min-width: 0;
+      height: 54px;
+      min-height: 54px;
+      flex: 0 0 auto;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      color: var(--text);
+      border: 1px solid #dbe4ea;
+      display: grid;
+      place-items: center;
+      gap: 4px;
+      padding: 8px 6px;
+    }
+
+    .tool-pop .tool-btn span:last-child {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .tool-pop .tool-btn .tool-icon {
+      font-size: 1rem;
+    }
+
+    body.dark-mode .tool-pop {
+      background: rgba(15, 23, 42, 0.92);
+      border-color: #334155;
+      box-shadow: 0 28px 60px rgba(2, 6, 23, 0.5);
+    }
+
+    body.dark-mode .tool-pop-title { color: #f8fafc; }
+    body.dark-mode .tool-pop-sub { color: #94a3b8; }
+    body.dark-mode .tool-pop-close,
+    body.dark-mode .tool-pop .tool-btn {
+      background: linear-gradient(180deg, #111827, #0f172a);
+      color: #f8fafc;
+      border-color: #334155;
+    }
+
+    .version-badge {
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+      font-size: 0.76rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .app-footer {
+      margin-top: 24px;
+      padding: 18px 4px 6px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .legal-note {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.55;
+    }
+
+    body.dark-mode .legal-note {
+      background: linear-gradient(180deg, #111827, #0f172a);
+      border-color: #334155;
+      color: #94a3b8;
+    }
+
+    .settings-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.46);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 1210;
+    }
+
+    .settings-modal.open {
+      display: flex;
+    }
+
+    .settings-panel {
+      width: min(760px, 100%);
+      max-height: min(82vh, 920px);
+      overflow: auto;
+      border-radius: 18px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
+    }
+
+    .settings-head {
+      position: sticky;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      background: linear-gradient(135deg, #0f766e, #115e59);
+      color: white;
+      border-bottom: 1px solid rgba(255,255,255,0.14);
+    }
+
+    .settings-head h3 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .settings-close {
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      min-height: 36px;
+      padding: 0;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.10);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .settings-body {
+      padding: 16px 18px 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .settings-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 14px;
+      background: #fbfdff;
+    }
+
+    .settings-card h4 {
+      margin: 0 0 8px;
+      font-size: 0.96rem;
+    }
+
+    .settings-card p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    body.dark-mode .settings-panel {
+      background: #111827;
+      border-color: #334155;
+      box-shadow: 0 24px 60px rgba(2, 6, 23, 0.5);
+    }
+
+    body.dark-mode .settings-card {
+      background: linear-gradient(180deg, #111827, #0f172a);
+      border-color: #334155;
+    }
+
+    body.dark-mode .settings-card h4 { color: #f8fafc; }
+    body.dark-mode .settings-card p { color: #94a3b8; }
+
+    .help-fab {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 52px;
+      height: 52px;
+      border-radius: 999px;
+      border: 1px solid rgba(15,118,110,0.18);
+      background: linear-gradient(135deg, #0f766e, #115e59);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 800;
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.18);
+      z-index: 1100;
+    }
+
+    .help-fab:hover {
+      transform: translateY(-2px);
+    }
+
+    .help-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.46);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 1200;
+    }
+
+    .help-modal.open {
+      display: flex;
+    }
+
+    .help-panel {
+      width: min(760px, 100%);
+      max-height: min(82vh, 920px);
+      overflow: auto;
+      border-radius: 18px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
+    }
+
+    .help-head {
+      position: sticky;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      background: linear-gradient(135deg, #0f766e, #115e59);
+      color: white;
+      border-bottom: 1px solid rgba(255,255,255,0.14);
+    }
+
+    .help-head h3 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .help-close {
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      min-height: 36px;
+      padding: 0;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.10);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .help-body {
+      padding: 16px 18px 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .help-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 14px;
+      background: #fbfdff;
+    }
+
+    .help-card h4 {
+      margin: 0 0 8px;
+      font-size: 0.96rem;
+    }
+
+    .help-card p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .app-footer strong {
+      color: var(--text);
+    }
+
+    .toolbar {
+      display: none;
+    }
+
+    .toolbar-group {
+      display: inline-flex;
+      width: fit-content;
+      max-width: 100%;
+      align-items: center;
+      gap: 6px;
+      padding: 4px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .tool-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      width: 38px;
+      min-width: 38px;
+      height: 38px;
+      min-height: 38px;
+      padding: 0;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.08);
+      color: white;
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1;
+      flex: 0 0 38px;
+    }
+
+    .tool-btn .tool-icon {
+      font-size: 0.95rem;
+      opacity: 0.95;
+    }
+
+    .tool-btn span:last-child {
+      display: none;
+    }
+
+    .tool-btn:hover {
+      background: rgba(255,255,255,0.16);
+    }
+
+    .tool-btn.primary-tool {
+      background: white;
+      color: #0f766e;
+      border-color: rgba(255,255,255,0.26);
+    }
+
+    .tool-btn.primary-tool:hover {
+      background: #f8fafc;
+    }
+
+    .tool-btn.warn-tool {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.14);
+    }
+
+    .tool-btn.warn-tool:hover {
+      background: rgba(255,255,255,0.14);
+    }
+
+    .tool-btn.active-tool {
+      background: rgba(255,255,255,0.22);
+      border-color: rgba(255,255,255,0.28);
+    }
+
+    body.dark-mode .tool-btn.active-tool {
+      background: rgba(255,255,255,0.22);
+      border-color: rgba(255,255,255,0.32);
+      color: #ffffff;
+    }
+
+    .screen-toggle {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      margin-left: auto;
+    }
+
+    .screen-btn {
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.10);
+      color: white;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .screen-btn.active {
+      background: rgba(255,255,255,0.22);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.16);
+    }
+
+    .screen-btn:hover {
+      background: rgba(255,255,255,0.18);
+    }
+
+    .app-screen { display: none; }
+    .app-screen.active { display: block; }
+
+    .project-manager {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.92);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-manager::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, #0f766e, #3b82f6);
+      opacity: 0.9;
+    }
+
+    .project-manager .pm-label {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .project-manager select {
+      min-width: 220px;
+      max-width: 320px;
+    }
+
+    .project-manager .pm-note {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .project-manager .pm-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .project-btn {
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .project-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .dashboard-card {
+      margin-bottom: 12px;
+    }
+
+    .dashboard-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .dashboard-head h2 {
+      margin: 0;
+    }
+
+    .dashboard-note {
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
+    .dashboard-kpis {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .dashboard-kpi {
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+
+    .dashboard-kpi:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px rgba(15, 23, 42, 0.08);
+    }
+
+    .dashboard-kpi .d-label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .dashboard-kpi .d-value {
+      display: block;
+      font-size: 1.02rem;
+      font-weight: 800;
+    }
+
+    .dashboard-table-wrap {
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .dashboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .dashboard-table th,
+    .dashboard-table td {
+      padding: 11px 12px;
+      border-bottom: 1px solid #eef2f7;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .dashboard-table th {
+      background: #f8fafc;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .dashboard-table tbody tr:hover {
+      background: #fbfdff;
+    }
+
+    .dashboard-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .dashboard-pill.ok { background: #f0fdf4; color: var(--ok); border-color: #bbf7d0; }
+    .dashboard-pill.warn { background: #fefce8; color: var(--warn); border-color: #fde047; }
+    .dashboard-pill.bad { background: #fef2f2; color: var(--bad); border-color: #fca5a5; }
+    .dashboard-pill.risk-high { background: #fff7ed; color: #c2410c; border-color: #fdba74; }
+    .dashboard-pill.risk-critical { background: #fef2f2; color: var(--bad); border-color: #fca5a5; }
+    .dashboard-pill.risk-medium { background: #fefce8; color: var(--warn); border-color: #fde047; }
+    .dashboard-pill.risk-low { background: #f0fdf4; color: var(--ok); border-color: #bbf7d0; }
+
+    body.dark-mode .dashboard-pill.ok,
+    body.dark-mode .ok { background: rgba(22,163,74,0.16); border-color: rgba(34,197,94,0.38); color: #86efac; }
+    body.dark-mode .dashboard-pill.warn,
+    body.dark-mode .warn { background: rgba(202,138,4,0.18); border-color: rgba(250,204,21,0.38); color: #fde68a; }
+    body.dark-mode .dashboard-pill.bad,
+    body.dark-mode .bad { background: rgba(185,28,28,0.18); border-color: rgba(248,113,113,0.38); color: #fca5a5; }
+    body.dark-mode .dashboard-pill.risk-low,
+    body.dark-mode .risk-badge.risk-low { background: rgba(22,163,74,0.16); border-color: rgba(34,197,94,0.38); color: #86efac; }
+    body.dark-mode .dashboard-pill.risk-medium,
+    body.dark-mode .risk-badge.risk-medium { background: rgba(202,138,4,0.18); border-color: rgba(250,204,21,0.38); color: #fde68a; }
+    body.dark-mode .dashboard-pill.risk-high,
+    body.dark-mode .risk-badge.risk-high { background: rgba(194,65,12,0.18); border-color: rgba(251,146,60,0.38); color: #fdba74; }
+    body.dark-mode .dashboard-pill.risk-critical,
+    body.dark-mode .risk-badge.risk-critical { background: rgba(185,28,28,0.18); border-color: rgba(248,113,113,0.38); color: #fca5a5; }
+
+    .dashboard-load-btn {
+      padding: 7px 10px;
+      border-radius: 9px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+
+    
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h2, .card h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+
+    .span-12 { grid-column: span 12; }
+    .span-7 { grid-column: span 7; }
+    .span-5 { grid-column: span 5; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .project-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .field.span-1 { grid-column: span 1; }
+    .field.span-2 { grid-column: span 2; }
+    .field.span-4 { grid-column: 1 / -1; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .compact-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(120px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+
+    .compact-grid.compact-2 {
+      grid-template-columns: repeat(2, minmax(140px, 1fr));
+      max-width: 520px;
+    }
+
+    .compact-field label {
+      font-size: 0.82rem;
+      margin-bottom: 4px;
+    }
+
+    .compact-field input {
+      padding: 10px 12px;
+      font-size: 0.92rem;
+      border-radius: 12px;
+    }
+
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 0.92rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.15s ease;
+      background: #ffffff;
+      color: var(--text);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #0f766e;
+      box-shadow: 0 0 0 3px rgba(15,118,110,0.15);
+    }
+
+    .input-manual {
+      background: #eef6ff;
+      border-color: #93c5fd;
+    }
+
+    .input-auto {
+      background: #f3f4f6;
+      border-color: #d1d5db;
+      color: #374151;
+      font-weight: 600;
+    }
+
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, #64748b 50%), linear-gradient(135deg, #64748b 50%, transparent 50%);
+      background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px);
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
+      padding-right: 36px;
+    }
+
+    textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .kpi-strip {
+      position: sticky;
+      top: calc(var(--hero-offset, 140px) + 8px);
+      z-index: 900;
+      margin-bottom: 14px;
+      background: rgba(248, 250, 252, 0.98);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+    }
+
+    .kpi-strip.collapsed {
+      padding: 8px 10px;
+    }
+
+    .kpi-strip.collapsed {
+      padding-bottom: 10px;
+    }
+
+    .kpi-mobile-toggle {
+      display: none;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color: var(--text);
+      font-weight: 700;
+      justify-content: center;
+      align-items: center;
+      gap: 0;
+      padding: 7px 11px;
+      border-radius: 999px;
+      position: relative;
+      z-index: 1;
+      white-space: nowrap;
+      flex: 0 0 auto;
+      min-width: 42px;
+    }
+
+    .kpi-mobile-chips {
+      display: none;
+      gap: 8px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      margin-top: 0;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .kpi-mobile-chips::-webkit-scrollbar {
+      display: none;
+    }
+
+    .kpi-chip {
+      flex: 0 0 auto;
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 0.8rem;
+      line-height: 1;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .kpi-chip:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+    }
+
+    .kpi-chip strong {
+      font-size: 0.82rem;
+      color: var(--text);
+    }
+
+    body.dark-mode .kpi-chip {
+      background: #111827;
+      color: #f8fafc;
+      border-color: #334155;
+      box-shadow: 0 2px 10px rgba(2, 6, 23, 0.32);
+    }
+
+    body.dark-mode .kpi-chip strong {
+      color: #f8fafc;
+    }
+
+    body.dark-mode .kpi-mobile-toggle {
+      background: #111827;
+      color: #f8fafc;
+      border-color: #334155;
+    }
+
+    body.dark-mode .kpi-strip .status-box {
+      color: #f8fafc;
+    }
+
+    .kpi-mobile-toggle .toggle-meta,
+    .kpi-mobile-toggle .toggle-text,
+    .kpi-mobile-toggle .toggle-label,
+    .kpi-mobile-toggle .toggle-value {
+      display: none;
+    }
+
+    .kpi-mobile-toggle .toggle-chevron {
+      font-size: 1rem;
+      transition: transform 0.2s ease;
+    }
+
+    .kpi-strip.collapsed .toggle-chevron {
+      transform: rotate(-90deg);
+    }
+
+    .kpi-strip-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .kpi-strip-inline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      flex-wrap: nowrap;
+      min-width: 0;
+    }
+
+    .kpi-strip-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .kpi-strip .status-box {
+      margin-top: 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
+    .kpi {
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid #e5e7eb;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+      position: relative;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .kpi::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 4px;
+      background: #0f766e;
+      opacity: 0.25;
+    }
+
+    .kpi.kpi-ok::after { background: #16a34a; opacity: 0.6; }
+    .kpi.kpi-warn::after { background: #eab308; opacity: 0.7; }
+    .kpi.kpi-bad::after { background: #dc2626; opacity: 0.6; }
+
+    .kpi .label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .kpi .value {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: clip;
+    }
+
+    .progress {
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 6px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #0f766e;
+      transition: width .2s ease;
+    }
+
+    .status-box {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 16px;
+      font-weight: 700;
+      border: 1px solid transparent;
+    }
+
+    .ok {
+      background: #f0fdf4;
+      color: var(--ok);
+      border-color: #bbf7d0;
+    }
+
+    .warn {
+      background: #fefce8;
+      color: var(--warn);
+      border-color: #fde047;
+    }
+
+    .bad {
+      background: #fef2f2;
+      color: var(--bad);
+      border-color: #fca5a5;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 20px;
+    }
+
+    .summary-item {
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--line);
+    }
+
+    .summary-item .s-label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .summary-item .s-value {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .chart-card {
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+
+    .compare-block {
+      margin-top: 18px;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      background: #ffffff;
+      padding: 16px;
+    }
+
+    .compare-block h3 {
+      margin: 0 0 14px;
+      font-size: 1rem;
+    }
+
+    .compare-metric {
+      margin-bottom: 16px;
+    }
+
+    .compare-metric:last-child {
+      margin-bottom: 0;
+    }
+
+    .compare-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .compare-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .compare-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .compare-rows {
+      display: grid;
+      gap: 8px;
+    }
+
+    .compare-row {
+      display: grid;
+      grid-template-columns: 92px 1fr 88px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .compare-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .compare-label.compare-ok,
+    .compare-value.compare-ok {
+      color: var(--ok);
+    }
+
+    .compare-label.compare-neutral,
+    .compare-value.compare-neutral {
+      color: var(--muted);
+    }
+
+    .compare-label.compare-warn,
+    .compare-value.compare-warn {
+      color: var(--warn);
+    }
+
+    .compare-label.compare-bad,
+    .compare-value.compare-bad {
+      color: var(--bad);
+    }
+
+    .compare-track {
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .compare-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    .compare-fill.planned { background: #94a3b8; }
+    .compare-fill.actual { background: #2563eb; }
+    .compare-fill.anticipated { background: #ea580c; }
+
+    .compare-value {
+      text-align: right;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .variance-block {
+      margin-top: 18px;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      background: #ffffff;
+      padding: 16px;
+    }
+
+    .variance-block h3 {
+      margin: 0 0 14px;
+      font-size: 1rem;
+    }
+
+    .variance-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .variance-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      background: #fbfdff;
+      padding: 12px 14px;
+    }
+
+    .variance-card .v-label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .variance-card .v-value {
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .variance-card .v-sub {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.76rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .variance-card.v-ok .v-value { color: var(--ok); }
+    .variance-card.v-warn .v-value { color: var(--warn); }
+    .variance-card.v-bad .v-value { color: var(--bad); }
+
+    .risk-block {
+      margin-top: 18px;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      background: #ffffff;
+      padding: 16px;
+    }
+
+    .risk-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .risk-head h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .risk-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-weight: 800;
+      font-size: 0.92rem;
+    }
+
+    .risk-badge.risk-low {
+      background: #f0fdf4;
+      color: var(--ok);
+      border-color: #bbf7d0;
+    }
+
+    .risk-badge.risk-medium {
+      background: #fefce8;
+      color: var(--warn);
+      border-color: #fde047;
+    }
+
+    .risk-badge.risk-high {
+      background: #fff7ed;
+      color: #c2410c;
+      border-color: #fdba74;
+    }
+
+    .risk-badge.risk-critical {
+      background: #fef2f2;
+      color: var(--bad);
+      border-color: #fca5a5;
+    }
+
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .risk-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      background: #fbfdff;
+      padding: 12px 14px;
+    }
+
+    .risk-card .r-label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .risk-card .r-value {
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .risk-card .r-sub {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.76rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .chart-wrap {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 220px;
+      padding: 18px 10px 8px;
+      border-radius: 16px;
+      background: #fbfdff;
+      border: 1px solid #e5e7eb;
+    }
+
+    .chart-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bar-shell {
+      width: 100%;
+      max-width: 90px;
+      height: 160px;
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      background: linear-gradient(180deg, #f3f4f6, #e5e7eb);
+      border-radius: 16px 16px 10px 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar {
+      width: 100%;
+      height: 0%;
+      border-radius: 16px 16px 10px 10px;
+      transition: height 0.25s ease;
+    }
+
+    .bar.budget { background: linear-gradient(180deg, #60a5fa, #2563eb); }
+    .bar.cost { background: linear-gradient(180deg, #34d399, #059669); }
+    .bar.hours { background: linear-gradient(180deg, #facc15, #ca8a04); }
+    .bar.bar-ok { background: linear-gradient(180deg, #34d399, #059669); }
+    .bar.bar-warn { background: linear-gradient(180deg, #fde68a, #eab308); }
+    .bar.bar-bad { background: linear-gradient(180deg, #fca5a5, #dc2626); }
+
+    .chart-label {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .chart-value {
+      font-size: 0.98rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .trend-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .trend-pill {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: #ffffff;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .trend-pill:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 18px rgba(15, 23, 42, 0.08);
+    }
+
+    .trend-pill .t-label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .trend-pill .t-value {
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .history-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .history-panel {
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 16px;
+      background: #ffffff;
+    }
+
+    .history-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .history-actions button {
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      border-radius: 10px;
+    }
+
+    .history-btn {
+      background: #ecfeff;
+      color: #0f766e;
+      border: 1px solid #99f6e4;
+    }
+
+    .history-btn.secondary {
+      background: #f8fafc;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 280px;
+      overflow: auto;
+    }
+
+    .history-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #fbfdff;
+    }
+
+    .history-item .row-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .history-item .row-sub {
+      font-size: 0.84rem;
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .history-item .row-note {
+      margin-top: 8px;
+      font-size: 0.82rem;
+      color: var(--text);
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 8px 10px;
+      line-height: 1.4;
+    }
+
+    .line-chart {
+      height: 280px;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #ffffff, #fbfdff);
+      padding: 12px;
+      position: relative;
+    }
+
+    .line-chart svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      font-size: 0.84rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .muted-note {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1200px) {
+      .brand-row { align-items: flex-start; }
+      .form-grid, .summary, .trend-row, .history-grid { grid-template-columns: 1fr; }
+      .dashboard-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .variance-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .risk-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .compact-grid { grid-template-columns: repeat(3, minmax(120px, 1fr)); }
+      .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .chart-wrap { min-height: auto; }
+      .bar-shell { max-width: 100%; height: 130px; }
+      .kpi-strip {
+        top: calc(var(--hero-offset, 140px) + 8px);
+        padding: 8px 10px;
+        border-radius: 14px;
+      }
+      .kpi-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+      .kpi-mobile-toggle { display: inline-flex; }
+      .kpi-mobile-chips { display: flex; }
+      .kpi-strip.collapsed .kpi-grid { display: none; }
+      .kpi-strip:not(.collapsed) .kpi-grid { display: grid; margin-top: 10px; }
+      .kpi-strip .kpi-strip-head {
+        margin-bottom: 0;
+        align-items: center;
+      }
+      .kpi-strip:not(.collapsed) .kpi-strip-head { margin-bottom: 8px; }
+      .kpi-strip-title { font-size: 0.8rem; }
+      .kpi-strip .status-box {
+        padding: 6px 9px;
+        font-size: 0.8rem;
+        border-radius: 10px;
+      }
+      .kpi-strip.collapsed {
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+      }
+    }
+
+    @media (min-width: 1201px) {
+      .kpi-strip.collapsed {
+        padding: 10px;
+      }
+      .kpi-mobile-toggle,
+      .kpi-mobile-chips {
+        display: none !important;
+      }
+      .kpi-strip .kpi-grid {
+        display: grid !important;
+      }
+      .kpi-strip .kpi-strip-head {
+        margin-bottom: 10px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .hero {
+        padding: 10px 12px;
+        top: 6px;
+      }
+      .hero-subline {
+        display: none;
+      }
+      .tool-launcher {
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+      }
+      .tool-pop {
+        left: 0;
+        top: calc(100% + 8px);
+        width: min(290px, calc(100vw - 28px));
+      }
+      .tool-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .top-nav {
+        margin-top: 8px;
+      }
+      .brand-lockup {
+        gap: 10px;
+      }
+      .brand-meta h1 {
+        font-size: 0.98rem;
+      }
+      .help-fab {
+        right: 14px;
+        bottom: 14px;
+        width: 48px;
+        height: 48px;
+      }
+      .help-panel {
+        width: 100%;
+        max-height: 88vh;
+      }
+      .help-head {
+        padding: 14px 16px;
+      }
+      .help-body {
+        padding: 14px 16px 16px;
+      }
+      .dashboard-kpis { grid-template-columns: 1fr; }
+      .dashboard-table-wrap { overflow: auto; }
+      .dashboard-table { min-width: 760px; }
+      .variance-grid { grid-template-columns: 1fr; }
+      .risk-grid { grid-template-columns: 1fr; }
+      .toolbar {
+        display: block;
+      }
+      .toolbar-group {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 56px));
+        justify-content: start;
+        width: fit-content;
+        max-width: 100%;
+        gap: 8px;
+      }
+      .tool-btn {
+        width: 56px;
+        min-width: 56px;
+        height: 42px;
+        min-height: 42px;
+        padding: 0;
+        flex: 0 0 56px;
+      }
+      .tool-btn .tool-icon {
+        font-size: 0.9rem;
+      }
+      .project-manager {
+        align-items: stretch;
+      }
+      .project-manager select {
+        min-width: 100%;
+        max-width: 100%;
+      }
+      .project-manager .pm-actions {
+        width: 100%;
+        margin-left: 0;
+      }
+      .project-btn {
+        flex: 1 1 auto;
+      }
+      .project-grid { grid-template-columns: 1fr; }
+      .compact-grid,
+      .compact-grid.compact-2 { grid-template-columns: repeat(2, minmax(120px, 1fr)); max-width: 100%; }
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .compare-row { grid-template-columns: 72px 1fr 72px; gap: 8px; }
+      .kpi .value { font-size: 18px; }
+      .kpi { padding: 12px; }
+      .kpi-strip-title { display: none; }
+      .kpi-strip-head {
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .kpi-strip-inline {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .kpi-mobile-toggle {
+        padding: 6px 9px;
+      }
+      .kpi-chip {
+        padding: 6px 9px;
+        font-size: 0.76rem;
+      }
+      .kpi-chip strong {
+        font-size: 0.78rem;
+      }
+    }
+
+    @media print {
+      body { background: white; }
+      .hero, .toolbar { box-shadow: none; }
+      button { display: none !important; }
+      .card, .hero { border: 1px solid #d1d5db; box-shadow: none; }
+      .wrap { max-width: 100%; padding: 0; }
+    }
+      .dashboard-chart {
+      margin: 4px 0 14px;
+      padding: 14px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      border: 1px solid #e5e7eb;
+    }
+
+    .dashboard-chart h3 {
+      margin: 0 0 10px;
+      font-size: 0.98rem;
+    }
+
+    .dashboard-chart canvas {
+      width: 100%;
+      max-height: 280px;
+    }
+
+    body.dark-mode .dashboard-chart {
+      background: linear-gradient(180deg, #111827, #0f172a);
+      border-color: #334155;
+      box-shadow: 0 18px 36px rgba(2, 6, 23, 0.38);
+    }
+  </style>
+  <script src="./assets/chart.umd.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    
+
+    <section class="hero">
+      <div class="brand-row">
+        <div class="brand-lockup">
+          <button class="tool-launcher" id="toolLauncherBtn" type="button" aria-label="Open tools">KP</button>
+          <div class="tool-pop" id="toolPop">
+            <div class="tool-pop-head">
+              <div>
+                <div class="tool-pop-title">KimiaPro Tools</div>
+                <p class="tool-pop-sub">Quick actions, export tools, theme, and reset controls.</p>
+              </div>
+              <button class="tool-pop-close" id="toolPopCloseBtn" type="button" aria-label="Close tools">×</button>
+            </div>
+            <div class="tool-grid" role="toolbar" aria-label="Main tools">
+              <button class="tool-btn primary-tool" id="printBtn" title="Print"><span class="tool-icon">🖨</span><span>Print</span></button>
+              <button class="tool-btn" id="downloadReportBtn" title="PDF Report"><span class="tool-icon">⬇</span><span>PDF</span></button>
+              <button class="tool-btn" id="downloadPortfolioReportBtn" title="Portfolio Report"><span class="tool-icon">▦</span><span>Portfolio</span></button>
+              <button class="tool-btn" id="saveJsonBtn" title="Export JSON"><span class="tool-icon">⤴</span><span>Export</span></button>
+              <button class="tool-btn" id="loadJsonBtn" title="Import JSON"><span class="tool-icon">⤵</span><span>Import</span></button>
+              <button class="tool-btn warn-tool" id="resetBtn" title="Clear Form"><span class="tool-icon">✕</span><span>Clear</span></button>
+              <button class="tool-btn" id="darkModeBtn" title="Dark Mode"><span class="tool-icon">◐</span><span>Theme</span></button>
+              <button class="tool-btn" id="openSettingsBtn" title="Settings"><span class="tool-icon">⚙</span><span>Settings</span></button>
+            </div>
+            <input id="jsonFileInput" type="file" accept="application/json" style="display:none;" />
+          </div>
+          <div class="brand-meta">
+            <p class="brand-kicker">KimiaPro</p>
+            <h1>Project KPI Tracker</h1>
+          </div>
+        </div>
+        <div class="version-badge">Version 2.2</div>
+      </div>
+      <div class="hero-subline">Compact project control workspace for engineering, operations, and consulting use.</div>
+    </section>
+
+    <div class="top-nav">
+      <button class="screen-btn active" id="dashboardViewBtn" type="button">Dashboard</button>
+      <button class="screen-btn" id="editorViewBtn" type="button">Project Editor</button>
+    </div>
+
+    <section class="app-screen dashboard-screen active" id="dashboardScreen">
+    <section class="project-manager" aria-label="Project manager">
+      <div class="pm-label">Saved Projects</div>
+      <select id="projectSelect">
+        <option value="">Current unsaved project</option>
+      </select>
+      <div class="pm-note" id="autosaveNote">Draft autosave only</div>
+      <div class="pm-actions">
+        <button class="project-btn" id="newProjectBtn" type="button">New</button>
+        <button class="project-btn" id="saveProjectBtn" type="button">Save</button>
+        <button class="project-btn" id="deleteProjectBtn" type="button">Delete</button>
+      </div>
+    </section>
+
+    <section class="card span-12 dashboard-card">
+      <div class="dashboard-head">
+        <h2>Saved Projects Dashboard</h2>
+        <div class="dashboard-note">Quick view of saved project health and key values</div>
+      </div>
+      <div class="dashboard-kpis">
+        <div class="dashboard-kpi"><span class="d-label">Saved Projects</span><span class="d-value" id="dashProjectCount">0</span></div>
+        <div class="dashboard-kpi"><span class="d-label">Total Budget</span><span class="d-value" id="dashTotalBudget">$0.00</span></div>
+        <div class="dashboard-kpi"><span class="d-label">Total Actual Cost</span><span class="d-value" id="dashTotalCost">$0.00</span></div>
+        <div class="dashboard-kpi"><span class="d-label">Average Anticipated Margin</span><span class="d-value" id="dashAvgMargin">0.0%</span></div>
+      </div>
+      <div class="dashboard-chart">
+        <h3>Portfolio Cost vs Budget</h3>
+        <canvas id="portfolioCostChart"></canvas>
+      </div>
+      <div class="dashboard-table-wrap">
+        <table class="dashboard-table">
+          <thead>
+            <tr>
+              <th>Project</th>
+              <th>Budget</th>
+              <th>Actual Cost</th>
+              <th>Anticipated Profit</th>
+              <th>Status</th>
+              <th>Risk</th>
+              <th>Updated</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="dashboardTableBody">
+            <tr><td colspan="8" class="muted-note" style="padding:14px;">No saved projects yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    </section>
+    </section>
+
+    <section class="app-screen editor-screen" id="editorScreen">
+    <section class="project-manager" aria-label="Project manager">
+      <div class="pm-label">Saved Projects</div>
+      <select id="projectSelectEditor">
+        <option value="">Current unsaved project</option>
+      </select>
+      <div class="pm-note" id="autosaveNoteEditor">Draft autosave only</div>
+      <div class="pm-actions">
+        <button class="project-btn" id="newProjectBtnEditor" type="button">New</button>
+        <button class="project-btn" id="saveProjectBtnEditor" type="button">Save</button>
+        <button class="project-btn" id="deleteProjectBtnEditor" type="button">Delete</button>
+      </div>
+    </section>
+
+    <section class="kpi-strip collapsed" id="kpiStrip">
+      <div class="kpi-strip-head">
+        <div class="kpi-strip-title">KPI Summary</div>
+        <div class="kpi-strip-inline">
+          <div class="status-box ok" id="statusBox">Status: OK</div>
+          <div class="kpi-mobile-chips" id="kpiMobileChips">
+            <div class="kpi-chip">Budget <strong id="chipBudgetUsed">0%</strong></div>
+            <div class="kpi-chip">Margin <strong id="chipMargin">0.0%</strong></div>
+            <div class="kpi-chip">Profit <strong id="chipProfit">$0.00</strong></div>
+            <div class="kpi-chip">Status <strong id="chipStatus">OK</strong></div>
+          </div>
+          <button class="kpi-mobile-toggle" id="kpiToggleBtn" type="button" aria-expanded="false" aria-label="Toggle KPI grid">
+            <span class="toggle-chevron">▾</span>
+          </button>
+        </div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi" id="kpiBudgetUsed">
+          <div class="label">Budget Used</div>
+          <div class="value" id="budgetUsedPct">0.0%</div>
+          <div class="progress"><div id="budgetBar" class="progress-bar"></div></div>
+        </div>
+        <div class="kpi" id="kpiRemainingBudget">
+          <div class="label">Remaining Budget</div>
+          <div class="value" id="remainingBudget">$0.00</div>
+        </div>
+        <div class="kpi" id="kpiTotalCost">
+          <div class="label">Total Cost</div>
+          <div class="value" id="totalCost">$0.00</div>
+        </div>
+        <div class="kpi" id="kpiHoursVariance">
+          <div class="label">Hours Variance</div>
+          <div class="value" id="hoursVariance">0.0 h</div>
+        </div>
+        <div class="kpi" id="kpiProfit">
+          <div class="label">Profit</div>
+          <div class="value" id="profitValue">$0.00</div>
+        </div>
+        <div class="kpi" id="kpiMargin">
+          <div class="label">Margin</div>
+          <div class="value" id="marginValue">0.0%</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card span-12">
+        <h2>Project Info</h2>
+        <div class="form-grid project-grid">
+          <div class="field span-2">
+            <label for="projectName">Project Name</label>
+            <input id="projectName" type="text" placeholder="Enter project name" />
+          </div>
+          <div class="field span-1">
+            <label for="client">Client / Project Owner</label>
+            <input id="client" type="text" placeholder="Optional" />
+          </div>
+          <div class="field span-1">
+            <label for="projectRef">Project ID / Quote / PO</label>
+            <input id="projectRef" type="text" placeholder="Optional reference" />
+          </div>
+
+          <div class="field span-1">
+            <label for="budget">Project Budget</label>
+            <input id="budget" class="input-manual" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="field span-1">
+            <label for="plannedHours">Planned Hours</label>
+            <input id="plannedHours" class="input-manual" type="number" min="0" step="0.1" placeholder="0" />
+          </div>
+          <div class="field span-1">
+            <label for="plannedHourlyRate">Planned Hourly Rate ($)</label>
+            <input id="plannedHourlyRate" class="input-manual" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="field span-1">
+            <label for="estimatedOtherCost">Estimated Other Cost (auto $)</label>
+            <input id="estimatedOtherCost" class="input-auto" type="number" min="0" step="0.01" placeholder="0.00" readonly />
+          </div>
+
+          <div class="field span-1">
+            <label for="revenue">Revenue / Contract Value</label>
+            <input id="revenue" class="input-manual" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="field span-1">
+            <label for="currencySelect">Currency</label>
+            <select id="currencySelect" class="input-manual">
+              <option value="CAD">CAD</option>
+              <option value="USD">USD</option>
+            </select>
+          </div>
+          <div class="field span-1">
+            <label for="startDate">Start Date</label>
+            <input id="startDate" type="date" />
+          </div>
+          <div class="field span-1">
+            <label for="endDate">End Date</label>
+            <input id="endDate" type="date" />
+          </div>
+
+          <div class="field span-4">
+            <div class="trend-row" style="margin-top:2px;">
+              <div class="trend-pill"><span class="t-label">Estimated Total Cost</span><span class="t-value" id="forecastTotalCostText">$0.00</span></div>
+              <div class="trend-pill"><span class="t-label">Estimated Profit</span><span class="t-value" id="forecastProfitText">$0.00</span></div>
+              <div class="trend-pill"><span class="t-label">Estimated Margin</span><span class="t-value" id="forecastMarginText">0.0%</span></div>
+              <div class="trend-pill"><span class="t-label">Estimated vs Actual</span><span class="t-value" id="forecastVsActualText">On target</span></div>
+            </div>
+          </div>
+
+          <div class="field span-4">
+            <label for="notes">Notes</label>
+            <textarea id="notes" placeholder="Scope, assumptions, comments..."></textarea>
+          </div>
+        </div>
+        <p class="muted-note">Estimated values are derived from project budget, planned hours, and planned hourly rate. Estimated other cost is calculated as Project Budget minus planned labor cost.</p>
+      </section>
+
+      <section class="card span-12">
+        <h2>Actual Costs</h2>
+        <div class="compact-grid">
+          <div class="field compact-field">
+            <label for="actualHours">Actual Hours</label>
+            <input id="actualHours" class="input-manual" type="number" min="0" step="0.1" placeholder="0" />
+          </div>
+          <div class="field compact-field">
+            <label for="hourlyRate">Hourly Rate ($)</label>
+            <input id="hourlyRate" class="input-manual" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="field compact-field">
+            <label for="laborCostManual">Labor Cost (auto $)</label>
+            <input id="laborCostManual" class="input-auto" type="number" min="0" step="0.01" placeholder="0.00" readonly />
+          </div>
+          <div class="field compact-field">
+            <label for="materialCost">Material Cost ($)</label>
+            <input id="materialCost" class="input-manual" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="field compact-field">
+            <label for="travelCost">Travel Cost ($)</label>
+            <input id="travelCost" class="input-manual" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="field compact-field">
+            <label for="miscCost">Misc Cost ($)</label>
+            <input id="miscCost" class="input-manual" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+        </div>
+        <p class="muted-note">Enter actual hours, hourly rate, and other costs in one place. Labor cost is calculated automatically from Actual Hours × Hourly Rate.</p>
+
+        <h2 style="margin-top:22px;">Anticipated to Complete</h2>
+        <div class="compact-grid">
+          <div class="field compact-field">
+            <label for="remainingHours">Remaining Hours</label>
+            <input id="remainingHours" class="input-manual" type="number" min="0" step="0.1" placeholder="0" />
+          </div>
+          <div class="field compact-field">
+            <label for="remainingCost">Remaining Cost ($)</label>
+            <input id="remainingCost" class="input-manual" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="field compact-field">
+            <label for="anticipatedTotalCost">Anticipated Total Cost</label>
+            <input id="anticipatedTotalCost" class="input-auto" type="text" readonly />
+          </div>
+          <div class="field compact-field">
+            <label for="anticipatedProfit">Anticipated Profit</label>
+            <input id="anticipatedProfit" class="input-auto" type="text" readonly />
+          </div>
+          <div class="field compact-field">
+            <label for="anticipatedMargin">Anticipated Margin</label>
+            <input id="anticipatedMargin" class="input-auto" type="text" readonly />
+          </div>
+          <div class="field compact-field">
+            <label for="remainingLaborCost">Remaining Labor Cost</label>
+            <input id="remainingLaborCost" class="input-auto" type="text" readonly />
+          </div>
+        </div>
+      </section>
+
+      <section class="card span-12 chart-card">
+        <h2>Actual KPI Trends</h2>
+        <div class="chart-wrap">
+          <div class="chart-col">
+            <div class="bar-shell"><div id="budgetChartBar" class="bar budget"></div></div>
+            <div class="chart-value" id="budgetChartValue">$0.00</div>
+            <div class="chart-label">Budget</div>
+          </div>
+          <div class="chart-col">
+            <div class="bar-shell"><div id="costChartBar" class="bar cost"></div></div>
+            <div class="chart-value" id="costChartValue">$0.00</div>
+            <div class="chart-label">Total Cost</div>
+          </div>
+          <div class="chart-col">
+            <div class="bar-shell"><div id="hoursChartBar" class="bar hours"></div></div>
+            <div class="chart-value" id="hoursChartValue">0%</div>
+            <div class="chart-label">Hours Used vs Plan</div>
+          </div>
+          <div class="chart-col">
+            <div class="bar-shell"><div id="profitChartBar" class="bar"></div></div>
+            <div class="chart-value" id="profitChartValue">0%</div>
+            <div class="chart-label">Profit Margin</div>
+          </div>
+        </div>
+        <div class="trend-row">
+          <div class="trend-pill"><span class="t-label">Cost Trend</span><span class="t-value" id="costTrendText">On track</span></div>
+          <div class="trend-pill"><span class="t-label">Hours Trend</span><span class="t-value" id="hoursTrendText">On track</span></div>
+          <div class="trend-pill"><span class="t-label">Budget Health</span><span class="t-value" id="budgetHealthText">Healthy</span></div>
+          <div class="trend-pill"><span class="t-label">Profit Trend</span><span class="t-value" id="profitTrendText">Break-even</span></div>
+        </div>
+
+        <div class="compare-block">
+          <h3>Planned vs Actual vs Anticipated</h3>
+
+          <div class="compare-metric">
+            <div class="compare-head">
+              <div class="compare-title">Total Cost</div>
+              <div class="compare-sub">Project budget baseline vs current actuals vs anticipated finish</div>
+            </div>
+            <div class="compare-rows">
+              <div class="compare-row">
+                <div class="compare-label" id="cmpCostPlannedLbl">Planned</div>
+                <div class="compare-track"><div id="cmpCostPlanned" class="compare-fill planned"></div></div>
+                <div id="cmpCostPlannedVal" class="compare-value">$0.00</div>
+              </div>
+              <div class="compare-row">
+                <div class="compare-label" id="cmpCostActualLbl">Actual</div>
+                <div class="compare-track"><div id="cmpCostActual" class="compare-fill actual"></div></div>
+                <div id="cmpCostActualVal" class="compare-value">$0.00</div>
+              </div>
+              <div class="compare-row">
+                <div class="compare-label" id="cmpCostAnticipatedLbl">Anticipated</div>
+                <div class="compare-track"><div id="cmpCostAnticipated" class="compare-fill anticipated"></div></div>
+                <div id="cmpCostAnticipatedVal" class="compare-value">$0.00</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="compare-metric">
+            <div class="compare-head">
+              <div class="compare-title">Hours</div>
+              <div class="compare-sub">Planned effort vs actual spent vs anticipated finish</div>
+            </div>
+            <div class="compare-rows">
+              <div class="compare-row">
+                <div class="compare-label" id="cmpHoursPlannedLbl">Planned</div>
+                <div class="compare-track"><div id="cmpHoursPlanned" class="compare-fill planned"></div></div>
+                <div id="cmpHoursPlannedVal" class="compare-value">0.0 h</div>
+              </div>
+              <div class="compare-row">
+                <div class="compare-label" id="cmpHoursActualLbl">Actual</div>
+                <div class="compare-track"><div id="cmpHoursActual" class="compare-fill actual"></div></div>
+                <div id="cmpHoursActualVal" class="compare-value">0.0 h</div>
+              </div>
+              <div class="compare-row">
+                <div class="compare-label" id="cmpHoursAnticipatedLbl">Anticipated</div>
+                <div class="compare-track"><div id="cmpHoursAnticipated" class="compare-fill anticipated"></div></div>
+                <div id="cmpHoursAnticipatedVal" class="compare-value">0.0 h</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="compare-metric">
+            <div class="compare-head">
+              <div class="compare-title">Profit</div>
+              <div class="compare-sub">Estimated at plan vs current actual vs anticipated finish</div>
+            </div>
+            <div class="compare-rows">
+              <div class="compare-row">
+                <div class="compare-label" id="cmpProfitPlannedLbl">Planned</div>
+                <div class="compare-track"><div id="cmpProfitPlanned" class="compare-fill planned"></div></div>
+                <div id="cmpProfitPlannedVal" class="compare-value">$0.00</div>
+              </div>
+              <div class="compare-row">
+                <div class="compare-label" id="cmpProfitActualLbl">Actual</div>
+                <div class="compare-track"><div id="cmpProfitActual" class="compare-fill actual"></div></div>
+                <div id="cmpProfitActualVal" class="compare-value">$0.00</div>
+              </div>
+              <div class="compare-row">
+                <div class="compare-label" id="cmpProfitAnticipatedLbl">Anticipated</div>
+                <div class="compare-track"><div id="cmpProfitAnticipated" class="compare-fill anticipated"></div></div>
+                <div id="cmpProfitAnticipatedVal" class="compare-value">$0.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="variance-block">
+          <h3>Variance Analysis</h3>
+          <div class="variance-grid">
+            <div class="variance-card" id="varCostActualCard">
+              <span class="v-label">Actual Cost Variance</span>
+              <span class="v-value" id="varCostActual">$0.00</span>
+              <span class="v-sub">Actual Total Cost vs Planned Budget</span>
+            </div>
+            <div class="variance-card" id="varHoursActualCard">
+              <span class="v-label">Actual Hours Variance</span>
+              <span class="v-value" id="varHoursActual">0.0 h</span>
+              <span class="v-sub">Actual Hours vs Planned Hours</span>
+            </div>
+            <div class="variance-card" id="varProfitActualCard">
+              <span class="v-label">Actual Profit Variance</span>
+              <span class="v-value" id="varProfitActual">$0.00</span>
+              <span class="v-sub">Actual Profit vs Planned Profit</span>
+            </div>
+            <div class="variance-card" id="varCostAnticipatedCard">
+              <span class="v-label">Anticipated Cost Variance</span>
+              <span class="v-value" id="varCostAnticipated">$0.00</span>
+              <span class="v-sub">Anticipated Finish Cost vs Planned Budget</span>
+            </div>
+            <div class="variance-card" id="varHoursAnticipatedCard">
+              <span class="v-label">Anticipated Hours Variance</span>
+              <span class="v-value" id="varHoursAnticipated">0.0 h</span>
+              <span class="v-sub">Anticipated Finish Hours vs Planned Hours</span>
+            </div>
+            <div class="variance-card" id="varProfitAnticipatedCard">
+              <span class="v-label">Anticipated Profit Variance</span>
+              <span class="v-value" id="varProfitAnticipated">$0.00</span>
+              <span class="v-sub">Anticipated Profit vs Planned Profit</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="risk-block">
+          <div class="risk-head">
+            <h3>Project Risk Level</h3>
+            <div class="risk-badge risk-low" id="riskBadge">LOW</div>
+          </div>
+          <div class="risk-grid">
+            <div class="risk-card">
+              <span class="r-label">Budget Used</span>
+              <span class="r-value" id="riskBudgetUsed">0.0%</span>
+              <span class="r-sub">Current actual cost burn</span>
+            </div>
+            <div class="risk-card">
+              <span class="r-label">Anticipated Cost vs Budget</span>
+              <span class="r-value" id="riskAnticipatedCost">0.0%</span>
+              <span class="r-sub">Expected finish cost ratio</span>
+            </div>
+            <div class="risk-card">
+              <span class="r-label">Anticipated Margin</span>
+              <span class="r-value" id="riskAnticipatedMargin">0.0%</span>
+              <span class="r-sub">Expected finish margin</span>
+            </div>
+            <div class="risk-card">
+              <span class="r-label">Anticipated Hours vs Plan</span>
+              <span class="r-value" id="riskAnticipatedHours">0.0%</span>
+              <span class="r-sub">Expected finish hours ratio</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="history-grid">
+          <div class="history-panel">
+            <h3>Project History Snapshots</h3>
+            <div class="field full" style="margin-bottom: 12px;">
+              <label for="snapshotLabel">Snapshot Label</label>
+              <input id="snapshotLabel" class="input-manual" type="text" placeholder="e.g. Week 1, Rev A, Client Review" />
+            </div>
+            <div class="field full" style="margin-bottom: 12px;">
+              <label for="snapshotNote">Snapshot Note / Comment</label>
+              <input id="snapshotNote" class="input-manual" type="text" placeholder="e.g. Added scope, client review, site delay, extra hours" />
+            </div>
+            <div class="history-actions">
+              <button id="saveSnapshotBtn" class="history-btn" type="button">Save Snapshot</button>
+              <button id="exportHistoryBtn" class="history-btn secondary" type="button">Export History JSON</button>
+              <button id="clearHistoryBtn" class="history-btn secondary" type="button">Clear History</button>
+            </div>
+            <div class="history-list" id="historyList">
+              <div class="muted-note">No saved snapshots yet.</div>
+            </div>
+          </div>
+
+          <div class="history-panel">
+            <h3>Budget vs Cost History</h3>
+            <div class="line-chart">
+              <svg id="historyChart" viewBox="0 0 520 260" preserveAspectRatio="none" aria-label="Budget and cost history chart"></svg>
+            </div>
+            <div class="legend">
+              <span><span class="legend-dot" style="background:#2563eb"></span>Budget</span>
+              <span><span class="legend-dot" style="background:#059669"></span>Total Cost</span>
+              <span><span class="legend-dot" style="background:#ca8a04"></span>Hours Used %</span>
+              <span><span class="legend-dot" style="background:#7c3aed"></span>Margin %</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card span-12">
+        <h2>Printable Summary</h2>
+        <p class="muted-note"> Use <strong>PDF Report</strong> to download a print-friendly report file that opens separately and can then be saved as PDF.</p>
+        <div class="summary">
+          <div class="summary-item"><span class="s-label">Project Name</span><span class="s-value" id="sumProjectName">—</span></div>
+          <div class="summary-item"><span class="s-label">Client / Owner</span><span class="s-value" id="sumClient">—</span></div>
+          <div class="summary-item"><span class="s-label">Project ID / Quote / PO</span><span class="s-value" id="sumProjectRef">—</span></div>
+          <div class="summary-item"><span class="s-label">Currency</span><span class="s-value" id="sumCurrency">CAD</span></div>
+          <div class="summary-item"><span class="s-label">Budget</span><span class="s-value" id="sumBudget">$0.00</span></div>
+          <div class="summary-item"><span class="s-label">Estimated Total Cost</span><span class="s-value" id="sumForecastTotalCost">$0.00</span></div>
+          <div class="summary-item"><span class="s-label">Estimated Profit</span><span class="s-value" id="sumForecastProfit">$0.00</span></div>
+          <div class="summary-item"><span class="s-label">Estimated Margin</span><span class="s-value" id="sumForecastMargin">0.0%</span></div>
+          <div class="summary-item"><span class="s-label">Revenue / Contract Value</span><span class="s-value" id="sumRevenue">$0.00</span></div>
+          <div class="summary-item"><span class="s-label">Total Cost</span><span class="s-value" id="sumTotalCost">$0.00</span></div>
+          <div class="summary-item"><span class="s-label">Remaining Budget</span><span class="s-value" id="sumRemaining">$0.00</span></div>
+          <div class="summary-item"><span class="s-label">Budget Used</span><span class="s-value" id="sumBudgetPct">0%</span></div>
+          <div class="summary-item"><span class="s-label">Planned Hours</span><span class="s-value" id="sumPlannedHours">0 h</span></div>
+          <div class="summary-item"><span class="s-label">Actual Hours</span><span class="s-value" id="sumActualHours">0 h</span></div>
+          <div class="summary-item"><span class="s-label">Hours Variance</span><span class="s-value" id="sumHoursVariance">0 h</span></div>
+          <div class="summary-item"><span class="s-label">Profit</span><span class="s-value" id="sumProfit">$0.00</span></div>
+          <div class="summary-item"><span class="s-label">Margin</span><span class="s-value" id="sumMargin">0.0%</span></div>
+          <div class="summary-item"><span class="s-label">Date Range</span><span class="s-value" id="sumDateRange">—</span></div>
+          <div class="summary-item full"><span class="s-label">Notes</span><span class="s-value" id="sumNotes">—</span></div>
+          <div class="summary-item"><span class="s-label">Overall Status</span><span class="s-value" id="sumStatus">OK</span></div>
+        </div>
+      </section>
+    </div>
+      </section>
+      <div class="legal-note">
+      Copyright (c) 2026 KimiaPro. Licensed, not sold. For purchaser use or internal business use only. Redistribution, resale, reposting, sublicensing, or reuse of this file or its code as a separate commercial product is not permitted. This tool is provided as-is without warranties, and users remain responsible for reviewing all inputs, outputs, assumptions, thresholds, and decisions.
+    </div>
+    <button class="help-fab" id="helpFab" type="button" aria-label="Open instructions" title="Instructions">?</button>
+
+    <div class="settings-modal" id="settingsModal" aria-hidden="true">
+      <div class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="settings-head">
+          <div>
+            <h3 id="settingsTitle">Settings</h3>
+          </div>
+          <button class="settings-close" id="settingsCloseBtn" type="button" aria-label="Close settings">×</button>
+        </div>
+        <div class="settings-body">
+          <div class="settings-card">
+            <h4>Report & Branding</h4>
+            <div class="form-grid" style="margin-top:10px;">
+              <div class="field">
+                <label for="settingsCompanyName">Company Name</label>
+                <input id="settingsCompanyName" type="text" placeholder="KimiaPro" />
+              </div>
+              <div class="field">
+                <label for="settingsPreparedBy">Prepared By</label>
+                <input id="settingsPreparedBy" type="text" placeholder="Optional" />
+              </div>
+            </div>
+          </div>
+          <div class="settings-card">
+            <h4>Defaults</h4>
+            <div class="form-grid" style="margin-top:10px;">
+              <div class="field">
+                <label for="settingsDefaultCurrency">Default Currency</label>
+                <select id="settingsDefaultCurrency">
+                  <option value="CAD">CAD</option>
+                  <option value="USD">USD</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="settingsDefaultRate">Default Hourly Rate ($)</label>
+                <input id="settingsDefaultRate" type="number" min="0" step="0.01" placeholder="0.00" />
+              </div>
+            </div>
+          </div>
+          <div class="settings-card">
+            <h4>Status Thresholds</h4>
+            <p>These thresholds apply to overall project status based on Budget Used.</p>
+            <div class="form-grid" style="margin-top:10px;">
+              <div class="field">
+                <label for="settingsWarningPct">Warning Threshold (%)</label>
+                <input id="settingsWarningPct" type="number" min="0" step="0.1" placeholder="80" />
+              </div>
+              <div class="field">
+                <label for="settingsOverPct">Over Budget Threshold (%)</label>
+                <input id="settingsOverPct" type="number" min="0" step="0.1" placeholder="100" />
+              </div>
+            </div>
+          </div>
+          <div class="settings-card">
+            <h4>Risk Thresholds</h4>
+            <p>These thresholds control how project risk is classified from anticipated finish values.</p>
+            <div class="form-grid" style="margin-top:10px;">
+              <div class="field">
+                <label for="settingsRiskMediumMargin">Medium Risk Margin &lt; (%)</label>
+                <input id="settingsRiskMediumMargin" type="number" min="0" step="0.1" placeholder="30" />
+              </div>
+              <div class="field">
+                <label for="settingsRiskHighMargin">High Risk Margin &lt; (%)</label>
+                <input id="settingsRiskHighMargin" type="number" min="0" step="0.1" placeholder="15" />
+              </div>
+              <div class="field">
+                <label for="settingsRiskCriticalMargin">Critical Risk Margin &lt; (%)</label>
+                <input id="settingsRiskCriticalMargin" type="number" min="0" step="0.1" placeholder="5" />
+              </div>
+              <div class="field">
+                <label for="settingsRiskMediumCost">Medium Cost vs Budget &gt; (%)</label>
+                <input id="settingsRiskMediumCost" type="number" min="0" step="0.1" placeholder="90" />
+              </div>
+              <div class="field">
+                <label for="settingsRiskHighCost">High Cost vs Budget &gt; (%)</label>
+                <input id="settingsRiskHighCost" type="number" min="0" step="0.1" placeholder="100" />
+              </div>
+              <div class="field">
+                <label for="settingsRiskCriticalCost">Critical Cost vs Budget &gt; (%)</label>
+                <input id="settingsRiskCriticalCost" type="number" min="0" step="0.1" placeholder="110" />
+              </div>
+              <div class="field">
+                <label for="settingsRiskMediumHours">Medium Hours vs Plan &gt; (%)</label>
+                <input id="settingsRiskMediumHours" type="number" min="0" step="0.1" placeholder="95" />
+              </div>
+              <div class="field">
+                <label for="settingsRiskHighHours">High Hours vs Plan &gt; (%)</label>
+                <input id="settingsRiskHighHours" type="number" min="0" step="0.1" placeholder="105" />
+              </div>
+              <div class="field">
+                <label for="settingsRiskCriticalHours">Critical Hours vs Plan &gt; (%)</label>
+                <input id="settingsRiskCriticalHours" type="number" min="0" step="0.1" placeholder="115" />
+              </div>
+            </div>
+          </div>
+          <div class="history-actions" style="margin-bottom:0;">
+            <button id="saveSettingsBtn" class="history-btn" type="button">Save Settings</button>
+            <button id="resetSettingsBtn" class="history-btn secondary" type="button">Reset Defaults</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="help-modal" id="helpModal" aria-hidden="true">
+      <div class="help-panel" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+        <div class="help-head">
+          <div>
+            <h3 id="helpTitle">Instructions & Guidelines</h3>
+          </div>
+          <button class="help-close" id="helpCloseBtn" type="button" aria-label="Close instructions">×</button>
+        </div>
+        <div class="help-body">
+          <div class="help-card">
+            <h4>Project Info</h4>
+            <p>Enter the project name, client, budget, planned hours, planned rate, revenue, and dates first. Estimated values are calculated from budget and planned labor, so this section sets the project baseline.</p>
+          </div>
+          <div class="help-card">
+            <h4>Actual Costs</h4>
+            <p>Enter real hours worked and real cost values here. Labor Cost is automatic from Actual Hours × Hourly Rate. This section drives the live KPI status, dashboard values, and variance analysis.</p>
+          </div>
+          <div class="help-card">
+            <h4>Anticipated to Complete</h4>
+            <p>Use Remaining Hours and Remaining Cost to estimate what is still needed to finish the job. The anticipated fields then calculate expected finish cost, finish profit, finish margin, and remaining labor cost.</p>
+          </div>
+          <div class="help-card">
+            <h4>KPI Trends, Variance, and Risk</h4>
+            <p>The charts and cards compare Planned, Actual, and Anticipated performance. Variance shows how far you are from plan. Risk level summarizes finish outlook based on anticipated margin, budget pressure, and hours overrun.</p>
+          </div>
+          <div class="help-card">
+            <h4>Project Health Criteria & Color Codes</h4>
+            <p>Status colors: <strong style="color:#15803d;">green</strong> = OK, <strong style="color:#ca8a04;">yellow</strong> = Warning, <strong style="color:#b91c1c;">red</strong> = Over Budget. For Budget Used, under 80% is green, 80% to 100% is yellow, and above 100% is red. Profit and margin stay healthier when values remain positive and close to or above the planned baseline.</p>
+            <p style="margin-top:8px;">Risk colors: <strong style="color:#15803d;">LOW</strong>, <strong style="color:#ca8a04;">MEDIUM</strong>, <strong style="color:#c2410c;">HIGH</strong>, and <strong style="color:#b91c1c;">CRITICAL</strong>. Current rules are based on anticipated finish values: low risk when margin and budget position are comfortable, medium when pressure starts building, high when finish cost or hours are expected to exceed plan, and critical when anticipated margin becomes very low or finish overrun becomes severe.</p>
+          </div>
+          <div class="help-card">
+            <h4>Saved Projects & Dashboard</h4>
+            <p>Use Save to store a project in the browser. The dashboard gives a quick view of all saved projects, including status and risk. Draft autosave does not overwrite a saved project unless you click Save.</p>
+          </div>
+          <div class="help-card">
+            <h4>KP Button & Tools Popup</h4>
+            <p>The rounded square <strong>KP</strong> button in the banner is your quick tools launcher. Tap or click it to open the popup menu for Print, PDF Report, Export, Import, Clear, and Theme. Its abstract gradient shape is part of the header design and works as the compact replacement for the old large toolbar.</p>
+          </div>
+          <div class="help-card">
+            <h4>Snapshots & PDF Report</h4>
+            <p>Save snapshots when you want a dated checkpoint with an optional note. Use PDF Report to download a print-friendly report that includes KPIs, comparison bars, variance, risk, and history.</p>
+          </div>
+          <div class="help-card">
+            <h4>License & Use</h4>
+            <p>This tool is licensed for the purchaser's own use or internal business use. Redistribution, resale, reposting, or reuse of this file or its code as a separate commercial product is not permitted.</p>
+          </div>
+          <div class="help-card">
+            <h4>Important Disclaimer</h4>
+            <p>This tool is intended to support project review and planning only. Users are responsible for checking inputs, outputs, assumptions, thresholds, and any commercial, contractual, legal, or engineering decisions made using the tool.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const defaultAppSettings = {
+      companyName: 'KimiaPro',
+      preparedBy: '',
+      defaultCurrency: 'CAD',
+      defaultRate: 0,
+      warningPct: 80,
+      overPct: 100,
+      riskMediumMarginPct: 30,
+      riskHighMarginPct: 15,
+      riskCriticalMarginPct: 5,
+      riskMediumCostPct: 90,
+      riskHighCostPct: 100,
+      riskCriticalCostPct: 110,
+      riskMediumHoursPct: 95,
+      riskHighHoursPct: 105,
+      riskCriticalHoursPct: 115
+    };
+
+    const ids = [
+      'projectName', 'client', 'budget', 'revenue', 'plannedHours', 'plannedHourlyRate', 'estimatedOtherCost', 'projectRef', 'currencySelect',
+      'startDate', 'endDate', 'notes', 'actualHours', 'hourlyRate', 'laborCostManual',
+      'materialCost', 'travelCost', 'miscCost', 'remainingHours', 'remainingCost',
+      'anticipatedTotalCost', 'anticipatedProfit', 'anticipatedMargin', 'remainingLaborCost', 'snapshotLabel'
+    ];
+
+    let historySnapshots = [];
+    let portfolioChart = null;
+
+    const $ = (id) => document.getElementById(id);
+    let currentScreen = 'dashboard';
+
+    function setScreen(screen) {
+      currentScreen = screen;
+      $('dashboardScreen').classList.toggle('active', screen === 'dashboard');
+      $('editorScreen').classList.toggle('active', screen === 'editor');
+      $('dashboardViewBtn').classList.toggle('active', screen === 'dashboard');
+      $('editorViewBtn').classList.toggle('active', screen === 'editor');
+      syncStickyOffsets();
+      try { localStorage.setItem('kimiapro-screen-mode', screen); } catch (err) {}
+    }
+
+    function setDarkMode(isDark) {
+      document.body.classList.toggle('dark-mode', isDark);
+      $('darkModeBtn').classList.toggle('active-tool', isDark);
+      $('darkModeBtn').title = isDark ? 'Light Mode' : 'Dark Mode';
+      try { localStorage.setItem('kimiapro-dark-mode', isDark ? '1' : '0'); } catch (err) {}
+      syncStickyOffsets();
+      renderDashboard();
+    }
+
+    function getAppSettings() {
+      try {
+        return { ...defaultAppSettings, ...(JSON.parse(localStorage.getItem('kimiapro-app-settings') || '{}') || {}) };
+      } catch (err) {
+        return { ...defaultAppSettings };
+      }
+    }
+
+    function saveAppSettings(settings) {
+      try {
+        localStorage.setItem('kimiapro-app-settings', JSON.stringify(settings));
+      } catch (err) {}
+    }
+
+    function fillSettingsForm() {
+      const s = getAppSettings();
+      $('settingsCompanyName').value = s.companyName || '';
+      $('settingsPreparedBy').value = s.preparedBy || '';
+      $('settingsDefaultCurrency').value = s.defaultCurrency || 'CAD';
+      $('settingsDefaultRate').value = s.defaultRate ?? 0;
+      $('settingsWarningPct').value = s.warningPct ?? 80;
+      $('settingsOverPct').value = s.overPct ?? 100;
+      $('settingsRiskMediumMargin').value = s.riskMediumMarginPct ?? 30;
+      $('settingsRiskHighMargin').value = s.riskHighMarginPct ?? 15;
+      $('settingsRiskCriticalMargin').value = s.riskCriticalMarginPct ?? 5;
+      $('settingsRiskMediumCost').value = s.riskMediumCostPct ?? 90;
+      $('settingsRiskHighCost').value = s.riskHighCostPct ?? 100;
+      $('settingsRiskCriticalCost').value = s.riskCriticalCostPct ?? 110;
+      $('settingsRiskMediumHours').value = s.riskMediumHoursPct ?? 95;
+      $('settingsRiskHighHours').value = s.riskHighHoursPct ?? 105;
+      $('settingsRiskCriticalHours').value = s.riskCriticalHoursPct ?? 115;
+    }
+
+    function applyDefaultSettingsToForm(force = false) {
+      const s = getAppSettings();
+      if (force || !$('currencySelect').value) $('currencySelect').value = s.defaultCurrency || 'CAD';
+      if (force || !$('plannedHourlyRate').value) $('plannedHourlyRate').value = s.defaultRate ? String(s.defaultRate) : '';
+      if (force || !$('hourlyRate').value) $('hourlyRate').value = s.defaultRate ? String(s.defaultRate) : '';
+    }
+
+    function applySettingsToCurrentForm() {
+      const s = getAppSettings();
+      $('currencySelect').value = s.defaultCurrency || 'CAD';
+      $('plannedHourlyRate').value = s.defaultRate ? String(s.defaultRate) : '';
+      $('hourlyRate').value = s.defaultRate ? String(s.defaultRate) : '';
+    }
+
+    function isFreshProjectDraft() {
+      const activeProject = getLastActiveProject();
+      if (activeProject) return false;
+      const fieldsToCheck = [
+        'projectName', 'client', 'projectRef', 'budget', 'revenue', 'plannedHours',
+        'actualHours', 'materialCost', 'travelCost', 'miscCost', 'remainingHours', 'remainingCost', 'notes'
+      ];
+      return fieldsToCheck.every((id) => {
+        const el = $(id);
+        return !el || !String(el.value || '').trim();
+      });
+    }
+
+    function setSettingsOpen(isOpen) {
+      const modal = $('settingsModal');
+      if (!modal) return;
+      modal.classList.toggle('open', isOpen);
+      modal.setAttribute('aria-hidden', String(!isOpen));
+      if (isOpen) fillSettingsForm();
+    }
+
+    function setHelpOpen(isOpen) {
+      const modal = $('helpModal');
+      if (!modal) return;
+      modal.classList.toggle('open', isOpen);
+      modal.setAttribute('aria-hidden', String(!isOpen));
+    }
+
+    function setToolPopOpen(isOpen) {
+      const pop = $('toolPop');
+      if (!pop) return;
+      pop.classList.toggle('open', isOpen);
+    }
+
+    function num(value) {
+      const n = parseFloat(value);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function currentCurrency() {
+      const el = $('currencySelect');
+      return el ? el.value : 'CAD';
+    }
+
+    function money(value) {
+      return new Intl.NumberFormat('en-CA', {
+        style: 'currency',
+        currency: currentCurrency(),
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(value || 0);
+    }
+
+    function pct(value) {
+      return `${(value || 0).toFixed(1)}%`;
+    }
+
+    function hours(value) {
+      return `${(value || 0).toFixed(1)} h`;
+    }
+
+    function formatDate(value) {
+      if (!value) return '—';
+      const date = new Date(value + 'T00:00:00');
+      return date.toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function getStatus(usedPct) {
+      const s = getAppSettings();
+      const warningPct = num(s.warningPct) || 80;
+      const overPct = num(s.overPct) || 100;
+      if (usedPct > overPct) return { label: 'Over Budget', className: 'bad' };
+      if (usedPct >= warningPct) return { label: 'Warning', className: 'warn' };
+      return { label: 'OK', className: 'ok' };
+    }
+
+    function currentMetrics() {
+      const budget = num($('budget').value);
+      const revenue = num($('revenue').value);
+      const plannedHours = num($('plannedHours').value);
+      const actualHours = num($('actualHours').value);
+      const hourlyRate = num($('hourlyRate').value);
+      const laborCost = actualHours * hourlyRate;
+      const materialCost = num($('materialCost').value);
+      const travelCost = num($('travelCost').value);
+      const miscCost = num($('miscCost').value);
+      const totalCost = laborCost + materialCost + travelCost + miscCost;
+      const plannedHourlyRate = num($('plannedHourlyRate').value);
+      const forecastHours = plannedHours;
+      const forecastHourlyRate = plannedHourlyRate;
+      const forecastLaborCost = forecastHours * forecastHourlyRate;
+      const forecastOtherCost = budget - forecastLaborCost;
+      const forecastTotalCost = forecastLaborCost + forecastOtherCost;
+      const remainingHours = num($('remainingHours').value);
+      const remainingCost = num($('remainingCost').value);
+      const anticipatedRemainingLaborCost = remainingHours * hourlyRate;
+      const anticipatedTotalCost = totalCost + anticipatedRemainingLaborCost + remainingCost;
+      const remaining = budget - totalCost;
+      const budgetUsed = budget > 0 ? (totalCost / budget) * 100 : 0;
+      const profit = revenue - totalCost;
+      const margin = revenue > 0 ? (profit / revenue) * 100 : 0;
+      const forecastProfit = revenue - forecastTotalCost;
+      const forecastMargin = revenue > 0 ? (forecastProfit / revenue) * 100 : 0;
+      const anticipatedProfit = revenue - anticipatedTotalCost;
+      const anticipatedMargin = revenue > 0 ? (anticipatedProfit / revenue) * 100 : 0;
+      const anticipatedHours = actualHours + remainingHours;
+      const plannedProfit = forecastProfit;
+      const hoursVariance = actualHours - plannedHours;
+      const hoursUsedPct = plannedHours > 0 ? (actualHours / plannedHours) * 100 : 0;
+      const status = getStatus(budgetUsed);
+
+      return {
+        budget, revenue, plannedHours, plannedHourlyRate, actualHours, hourlyRate, laborCost,
+        materialCost, travelCost, miscCost, totalCost, remaining,
+        forecastHours, forecastHourlyRate, forecastLaborCost, forecastOtherCost,
+        forecastTotalCost, forecastProfit, forecastMargin,
+        remainingHours, remainingCost, anticipatedRemainingLaborCost, anticipatedTotalCost, anticipatedProfit, anticipatedMargin,
+        anticipatedHours, plannedProfit,
+        budgetUsed, profit, margin, hoursVariance, hoursUsedPct, status
+      };
+    }
+
+    function getFormData() {
+      const data = {};
+      ids.forEach((id) => {
+        const el = $(id);
+        if (el) data[id] = el.value;
+      });
+      return data;
+    }
+
+    function applyFormData(data) {
+      ids.forEach((id) => {
+        const el = $(id);
+        if (el && data[id] !== undefined) el.value = data[id];
+      });
+      update();
+    }
+
+    function getProjectStatusFromData(data) {
+      const metrics = calculateMetricsFromData(data);
+      return getStatus(metrics.budgetUsed);
+    }
+
+    function getRiskFromMetrics(metrics) {
+      const s = getAppSettings();
+      const anticipatedCostRatio = metrics.budget > 0 ? (metrics.anticipatedTotalCost / metrics.budget) * 100 : 0;
+      const anticipatedHoursRatio = metrics.plannedHours > 0 ? (metrics.anticipatedHours / metrics.plannedHours) * 100 : 0;
+      const mediumMargin = num(s.riskMediumMarginPct) || 30;
+      const highMargin = num(s.riskHighMarginPct) || 15;
+      const criticalMargin = num(s.riskCriticalMarginPct) || 5;
+      const mediumCost = num(s.riskMediumCostPct) || 90;
+      const highCost = num(s.riskHighCostPct) || 100;
+      const criticalCost = num(s.riskCriticalCostPct) || 110;
+      const mediumHours = num(s.riskMediumHoursPct) || 95;
+      const highHours = num(s.riskHighHoursPct) || 105;
+      const criticalHours = num(s.riskCriticalHoursPct) || 115;
+      let riskLevel = 'LOW';
+      let riskClass = 'risk-low';
+      if (metrics.anticipatedMargin < criticalMargin || anticipatedCostRatio > criticalCost || anticipatedHoursRatio > criticalHours) {
+        riskLevel = 'CRITICAL';
+        riskClass = 'risk-critical';
+      } else if (metrics.anticipatedMargin < highMargin || anticipatedCostRatio > highCost || anticipatedHoursRatio > highHours || metrics.budgetUsed > 95) {
+        riskLevel = 'HIGH';
+        riskClass = 'risk-high';
+      } else if (metrics.anticipatedMargin < mediumMargin || anticipatedCostRatio > mediumCost || anticipatedHoursRatio > mediumHours || metrics.budgetUsed > 80) {
+        riskLevel = 'MEDIUM';
+        riskClass = 'risk-medium';
+      }
+      return { riskLevel, riskClass, anticipatedCostRatio, anticipatedHoursRatio };
+    }
+
+    function calculateMetricsFromData(data) {
+      const budget = num(data.budget);
+      const revenue = num(data.revenue);
+      const plannedHours = num(data.plannedHours);
+      const plannedHourlyRate = num(data.plannedHourlyRate);
+      const actualHours = num(data.actualHours);
+      const hourlyRate = num(data.hourlyRate);
+      const laborCost = actualHours * hourlyRate;
+      const materialCost = num(data.materialCost);
+      const travelCost = num(data.travelCost);
+      const miscCost = num(data.miscCost);
+      const totalCost = laborCost + materialCost + travelCost + miscCost;
+      const forecastLaborCost = plannedHours * plannedHourlyRate;
+      const forecastOtherCost = budget - forecastLaborCost;
+      const forecastTotalCost = forecastLaborCost + forecastOtherCost;
+      const forecastProfit = revenue - forecastTotalCost;
+      const forecastMargin = revenue > 0 ? (forecastProfit / revenue) * 100 : 0;
+      const remainingHours = num(data.remainingHours);
+      const remainingCost = num(data.remainingCost);
+      const anticipatedRemainingLaborCost = remainingHours * hourlyRate;
+      const anticipatedTotalCost = totalCost + anticipatedRemainingLaborCost + remainingCost;
+      const anticipatedProfit = revenue - anticipatedTotalCost;
+      const anticipatedMargin = revenue > 0 ? (anticipatedProfit / revenue) * 100 : 0;
+      const anticipatedHours = actualHours + remainingHours;
+      const budgetUsed = budget > 0 ? (totalCost / budget) * 100 : 0;
+      return {
+        budget,
+        totalCost,
+        anticipatedProfit,
+        anticipatedMargin,
+        budgetUsed,
+        plannedHours,
+        actualHours,
+        anticipatedHours,
+        anticipatedTotalCost,
+        forecastProfit,
+        forecastMargin
+      };
+    }
+
+    function drawPortfolioCostChart(entries) {
+      const canvas = $('portfolioCostChart');
+      if (!canvas || typeof Chart === 'undefined') return;
+
+      const labels = entries.map(([name]) => name);
+      const budgets = entries.map(([, record]) => calculateMetricsFromData(record.data || {}).budget);
+      const actuals = entries.map(([, record]) => calculateMetricsFromData(record.data || {}).totalCost);
+      const anticipateds = entries.map(([, record]) => calculateMetricsFromData(record.data || {}).anticipatedTotalCost);
+      const dark = document.body.classList.contains('dark-mode');
+      const tickColor = dark ? '#94a3b8' : '#64748b';
+      const gridColor = dark ? 'rgba(148,163,184,0.18)' : 'rgba(100,116,139,0.14)';
+
+      if (portfolioChart) portfolioChart.destroy();
+
+      portfolioChart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Budget', data: budgets, backgroundColor: 'rgba(37, 99, 235, 0.75)', borderRadius: 6 },
+            { label: 'Actual', data: actuals, backgroundColor: 'rgba(5, 150, 105, 0.75)', borderRadius: 6 },
+            { label: 'Anticipated', data: anticipateds, backgroundColor: 'rgba(234, 88, 12, 0.78)', borderRadius: 6 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { color: tickColor, boxWidth: 12, usePointStyle: true, pointStyle: 'rectRounded' }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: tickColor },
+              grid: { display: false }
+            },
+            y: {
+              ticks: { color: tickColor },
+              grid: { color: gridColor }
+            }
+          }
+        }
+      });
+    }
+
+    function renderDashboard() {
+      const projects = getSavedProjects();
+      const entries = Object.entries(projects).sort((a, b) => a[0].localeCompare(b[0]));
+      const body = $('dashboardTableBody');
+      if (!body) return;
+
+      let totalBudget = 0;
+      let totalCost = 0;
+      let totalMargin = 0;
+
+      if (!entries.length) {
+        body.innerHTML = '<tr><td colspan="8" class="muted-note" style="padding:14px;">No saved projects yet.</td></tr>';
+      } else {
+        body.innerHTML = entries.map(([name, record]) => {
+          const data = record.data || {};
+          const metrics = calculateMetricsFromData(data);
+          const status = getStatus(metrics.budgetUsed);
+          const risk = getRiskFromMetrics(metrics);
+          totalBudget += metrics.budget;
+          totalCost += metrics.totalCost;
+          totalMargin += metrics.anticipatedMargin;
+          const updated = record.savedAt ? new Date(record.savedAt).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }) : '—';
+          return `
+            <tr>
+              <td><strong>${name}</strong></td>
+              <td>${money(metrics.budget)}</td>
+              <td>${money(metrics.totalCost)}</td>
+              <td>${money(metrics.anticipatedProfit)}</td>
+              <td><span class="dashboard-pill ${status.className}">${status.label}</span></td>
+              <td><span class="dashboard-pill ${risk.riskClass}">${risk.riskLevel}</span></td>
+              <td>${updated}</td>
+              <td><button class="dashboard-load-btn" type="button" data-project-load="${name}">Load</button></td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      $('dashProjectCount').textContent = String(entries.length);
+      $('dashTotalBudget').textContent = money(totalBudget);
+      $('dashTotalCost').textContent = money(totalCost);
+      $('dashAvgMargin').textContent = pct(entries.length ? totalMargin / entries.length : 0);
+      drawPortfolioCostChart(entries);
+    }
+
+    function setLastActiveProject(name) {
+      try {
+        localStorage.setItem('kimiapro-last-active-project', name || '');
+      } catch (err) {
+        console.warn('Could not store active project.', err);
+      }
+    }
+
+    function getLastActiveProject() {
+      try {
+        return localStorage.getItem('kimiapro-last-active-project') || '';
+      } catch (err) {
+        return '';
+      }
+    }
+
+    function setAutosaveNote(text) {
+      const el = $('autosaveNote');
+      if (el) el.textContent = text;
+      const el2 = $('autosaveNoteEditor');
+      if (el2) el2.textContent = text;
+    }
+
+    function getSavedProjects() {
+      try {
+        return JSON.parse(localStorage.getItem('kimiapro-project-library') || '{}');
+      } catch (err) {
+        console.warn('Could not read saved projects.', err);
+        return {};
+      }
+    }
+
+    function persistSavedProjects(projects) {
+      try {
+        localStorage.setItem('kimiapro-project-library', JSON.stringify(projects));
+      } catch (err) {
+        console.warn('Could not save project library.', err);
+      }
+    }
+
+    function buildProjectPayload(name) {
+      return {
+        name,
+        savedAt: new Date().toISOString(),
+        data: getFormData()
+      };
+    }
+
+    function refreshProjectSelect(selectedName = '') {
+      const select = $('projectSelect') || $('projectSelectEditor');
+      const selectEditor = $('projectSelectEditor');
+      if (!select && !selectEditor) return;
+      const projects = getSavedProjects();
+      const names = Object.keys(projects).sort((a, b) => a.localeCompare(b));
+      const preferred = selectedName || getLastActiveProject();
+      if (select) select.innerHTML = '<option value="">Current unsaved project</option>';
+      if (selectEditor) selectEditor.innerHTML = '<option value="">Current unsaved project</option>';
+      names.forEach((name) => {
+        const option = document.createElement('option');
+        const record = projects[name] || {};
+        const metrics = calculateMetricsFromData(record.data || {});
+        const status = getStatus(metrics.budgetUsed);
+        const icon = status.className === 'bad' ? '🔴' : status.className === 'warn' ? '🟡' : '🟢';
+        option.value = name;
+        option.textContent = `${icon} ${name}`;
+        if (select) select.appendChild(option.cloneNode(true));
+        if (selectEditor) selectEditor.appendChild(option);
+      });
+      if (preferred && projects[preferred]) {
+        if (select) select.value = preferred;
+        if (selectEditor) selectEditor.value = preferred;
+        setLastActiveProject(preferred);
+      } else {
+        if (select) select.value = '';
+        if (selectEditor) selectEditor.value = '';
+        setLastActiveProject('');
+      }
+      renderDashboard();
+    }
+
+    function promptProjectSaveName() {
+      const currentName = ($('projectName').value || '').trim();
+      const chosen = currentName || window.prompt('Enter a project name to save this project:') || '';
+      return chosen.trim();
+    }
+
+    function saveCurrentProject() {
+      let name = promptProjectSaveName();
+      if (!name) {
+        alert('Please enter a project name before saving.');
+        return;
+      }
+      if (!$('projectName').value.trim()) $('projectName').value = name;
+      const projects = getSavedProjects();
+      projects[name] = buildProjectPayload(name);
+      persistSavedProjects(projects);
+      refreshProjectSelect(name);
+      setLastActiveProject(name);
+      setAutosaveNote(`Saved project: ${name}`);
+    }
+
+    function loadSelectedProject(name) {
+      if (!name) {
+        setLastActiveProject('');
+        setAutosaveNote('Working in unsaved draft');
+        return;
+      }
+      const projects = getSavedProjects();
+      const record = projects[name];
+      if (!record || !record.data) return;
+      applyFormData(record.data);
+      refreshProjectSelect(name);
+      setLastActiveProject(name);
+      setAutosaveNote(`Loaded project: ${name} (manual Save required to update)`);
+      setScreen('editor');
+    }
+
+    function deleteSelectedProject() {
+      const select = $('projectSelect');
+      const name = select ? select.value : '';
+      if (!name) {
+        alert('Choose a saved project to delete.');
+        return;
+      }
+      const projects = getSavedProjects();
+      if (!projects[name]) return;
+      delete projects[name];
+      persistSavedProjects(projects);
+      refreshProjectSelect('');
+      setLastActiveProject('');
+      setAutosaveNote(`Deleted project: ${name}`);
+    }
+
+    function clearProjectForm() {
+      ids.forEach((id) => {
+        const el = $(id);
+        if (!el) return;
+        if (el.tagName === 'SELECT') el.value = 'CAD';
+        else el.value = '';
+      });
+      applyDefaultSettingsToForm(true);
+      const projectSelect = $('projectSelect');
+      const projectSelectEditor = $('projectSelectEditor');
+      if (projectSelect) projectSelect.value = '';
+      if (projectSelectEditor) projectSelectEditor.value = '';
+      setLastActiveProject('');
+      setAutosaveNote('Working in unsaved draft');
+      update();
+    }
+
+    function saveState() {
+      try {
+        const draft = getFormData();
+        localStorage.setItem('kimiapro-kpi-tracker', JSON.stringify(draft));
+        const activeName = getLastActiveProject();
+        if (activeName) setAutosaveNote(`Draft autosaved (saved project unchanged): ${activeName}`);
+        else setAutosaveNote('Draft autosaved');
+      } catch (err) {
+        console.warn('Local save not available in this browser mode.', err);
+      }
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem('kimiapro-kpi-tracker');
+        if (raw) {
+          applyFormData(JSON.parse(raw));
+          const activeName = getLastActiveProject();
+          if (activeName) setAutosaveNote(`Restored draft from: ${activeName}`);
+          else setAutosaveNote('Restored draft');
+          return;
+        }
+        const activeName = getLastActiveProject();
+        if (activeName) setAutosaveNote(`Saved project selected: ${activeName}`);
+      } catch (err) {
+        console.warn('Local load not available in this browser mode.', err);
+      }
+    }
+
+    function saveHistoryState() {
+      try {
+        localStorage.setItem('kimiapro-kpi-tracker-history', JSON.stringify(historySnapshots));
+      } catch (err) {
+        console.warn('History save not available in this browser mode.', err);
+      }
+    }
+
+    function loadHistoryState() {
+      try {
+        const raw = localStorage.getItem('kimiapro-kpi-tracker-history');
+        historySnapshots = raw ? JSON.parse(raw) : [];
+      } catch (err) {
+        historySnapshots = [];
+        console.warn('History load not available in this browser mode.', err);
+      }
+    }
+
+    function autoFit(el) {
+      if (!el) return;
+      const len = (el.textContent || '').length;
+      let size = 26;
+      if (len > 12) size = 22;
+      if (len > 16) size = 18;
+      if (len > 20) size = 14;
+      if (len > 24) size = 12;
+      el.style.fontSize = `${size}px`;
+    }
+
+    function renderHistory() {
+      const list = $('historyList');
+      const chart = $('historyChart');
+      if (!list || !chart) return;
+
+      if (!historySnapshots.length) {
+        list.innerHTML = '<div class="muted-note">No saved snapshots yet.</div>';
+        chart.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#94a3b8" font-size="14">No history yet</text>';
+        return;
+      }
+
+      const sortedSnapshots = historySnapshots.slice().sort((a, b) => {
+        const ta = a.savedAt ? new Date(a.savedAt).getTime() : 0;
+        const tb = b.savedAt ? new Date(b.savedAt).getTime() : 0;
+        return ta - tb;
+      });
+
+      list.innerHTML = sortedSnapshots.slice().reverse().map((snap, idx) => `
+        <div class="history-item">
+          <div class="row-top">
+            <span>${snap.name || ('Snapshot ' + (sortedSnapshots.length - idx))}</span>
+            <span>${snap.dateLabel}</span>
+          </div>
+          <div class="row-sub">
+            <span>Budget: ${money(snap.budget)}</span>
+            <span>Cost: ${money(snap.totalCost)}</span>
+            <span>Hours: ${snap.hoursUsedPct.toFixed(1)}%</span>
+            <span>Margin: ${(snap.margin || 0).toFixed(1)}%</span>
+            <span>Status: ${snap.statusLabel}</span>
+          </div>
+          ${snap.note ? `<div class="row-note">${snap.note}</div>` : ''}
+        </div>
+      `).join('');
+
+      const width = 520;
+      const height = 260;
+      const pad = { top: 20, right: 20, bottom: 30, left: 40 };
+      const innerW = width - pad.left - pad.right;
+      const innerH = height - pad.top - pad.bottom;
+      const points = sortedSnapshots;
+      const maxMoney = Math.max(1, ...points.map((p) => Math.max(p.budget, p.totalCost)));
+      const maxPercent = Math.max(100, ...points.map((p) => Math.max(p.hoursUsedPct, Math.abs(p.margin || 0))));
+      const stepX = points.length > 1 ? innerW / (points.length - 1) : 0;
+      const moneyY = (v) => pad.top + innerH - (v / maxMoney) * innerH;
+      const percentY = (v) => pad.top + innerH - (v / maxPercent) * innerH;
+      const xAt = (i) => pad.left + (points.length > 1 ? i * stepX : innerW / 2);
+      const makePath = (arr, yFn) => arr.map((p, i) => `${i === 0 ? 'M' : 'L'} ${xAt(i)} ${yFn(p)}`).join(' ');
+
+      const budgetPath = makePath(points.map((p) => p.budget), moneyY);
+      const costPath = makePath(points.map((p) => p.totalCost), moneyY);
+      const hoursPath = makePath(points.map((p) => p.hoursUsedPct), percentY);
+      const marginPath = makePath(points.map((p) => Math.abs(p.margin || 0)), percentY);
+      const xLabels = points.map((p, i) => `
+        <text x="${xAt(i)}" y="244" text-anchor="middle" fill="#64748b" font-size="11">${p.shortLabel}</text>
+        <text x="${xAt(i)}" y="256" text-anchor="middle" fill="#94a3b8" font-size="10">${p.name || ''}</text>
+      `).join('');
+      const budgetDots = points.map((p, i) => `<circle cx="${xAt(i)}" cy="${moneyY(p.budget)}" r="4" fill="#2563eb" />`).join('');
+      const costDots = points.map((p, i) => `<circle cx="${xAt(i)}" cy="${moneyY(p.totalCost)}" r="4" fill="#059669" />`).join('');
+      const hoursDots = points.map((p, i) => `<circle cx="${xAt(i)}" cy="${percentY(p.hoursUsedPct)}" r="4" fill="#ca8a04" />`).join('');
+      const marginDots = points.map((p, i) => `<circle cx="${xAt(i)}" cy="${percentY(Math.abs(p.margin || 0))}" r="4" fill="#7c3aed" />`).join('');
+
+      chart.innerHTML = `
+        <line x1="${pad.left}" y1="${pad.top + innerH}" x2="${width - pad.right}" y2="${pad.top + innerH}" stroke="#cbd5e1" stroke-width="1" />
+        <line x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${pad.top + innerH}" stroke="#cbd5e1" stroke-width="1" />
+        <path d="${budgetPath}" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="${costPath}" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="${hoursPath}" fill="none" stroke="#ca8a04" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 4" />
+        <path d="${marginPath}" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 3" />
+        ${budgetDots}
+        ${costDots}
+        ${hoursDots}
+        ${marginDots}
+        ${xLabels}
+      `;
+    }
+
+    function buildPortfolioReportHtml() {
+      const appSettings = getAppSettings();
+      const companyName = appSettings.companyName || 'KimiaPro';
+      const preparedBy = appSettings.preparedBy || '—';
+      const projects = getSavedProjects();
+      const entries = Object.entries(projects).sort((a, b) => a[0].localeCompare(b));
+      const totalBudget = entries.reduce((s, [, r]) => s + calculateMetricsFromData(r.data || {}).budget, 0);
+      const totalCost = entries.reduce((s, [, r]) => s + calculateMetricsFromData(r.data || {}).totalCost, 0);
+      const avgMargin = entries.length ? entries.reduce((s, [, r]) => s + calculateMetricsFromData(r.data || {}).anticipatedMargin, 0) / entries.length : 0;
+      const avgBudgetUsed = entries.length ? entries.reduce((s, [, r]) => s + calculateMetricsFromData(r.data || {}).budgetUsed, 0) / entries.length : 0;
+
+      const rows = entries.length ? entries.map(([name, record]) => {
+        const m = calculateMetricsFromData(record.data || {});
+        const status = getStatus(m.budgetUsed);
+        const risk = getRiskFromMetrics(m);
+        const updated = record.savedAt ? new Date(record.savedAt).toLocaleDateString('en-CA', { year:'numeric', month:'short', day:'numeric' }) : '—';
+        return `
+          <tr>
+            <td><strong>${name}</strong></td>
+            <td>${money(m.budget)}</td>
+            <td>${money(m.totalCost)}</td>
+            <td>${money(m.anticipatedTotalCost)}</td>
+            <td>${money(m.anticipatedProfit)}</td>
+            <td>${pct(m.anticipatedMargin)}</td>
+            <td><span class="pill ${status.className}">${status.label}</span></td>
+            <td><span class="pill ${risk.riskClass}">${risk.riskLevel}</span></td>
+            <td>${updated}</td>
+          </tr>
+        `;
+      }).join('') : '<tr><td colspan="9" class="empty">No saved projects yet.</td></tr>';
+
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#0f766e" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./assets/icons/icon-180.png" />
+  <title>${companyName} Portfolio Report</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;margin:24px;color:#1f2937;background:#fff;}
+    .shell{max-width:1100px;margin:0 auto;}
+    .header{border:1px solid #dbe4ea;border-radius:18px;overflow:hidden;margin-bottom:20px;}
+    .header-top{background:linear-gradient(135deg,#0f766e,#2563eb 60%,#7c3aed);color:#fff;padding:20px 22px;display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;}
+    .brand{display:flex;gap:14px;align-items:center;}
+    .mark{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);font-weight:800;}
+    .kicker{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.82;margin-bottom:4px;}
+    h1{margin:0;font-size:28px;line-height:1.05;}
+    .subtitle{font-size:13px;opacity:.92;margin-top:6px;}
+    .badge{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);font-size:12px;font-weight:800;white-space:nowrap;}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 20px;}
+    .stat{border:1px solid #e5e7eb;border-radius:14px;background:linear-gradient(180deg,#fff,#f8fafc);padding:14px;}
+    .stat .label{display:block;font-size:11px;color:#64748b;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px;}
+    .stat .value{display:block;font-size:20px;font-weight:800;}
+    .section{border:1px solid #e5e7eb;border-radius:16px;background:#fff;overflow:hidden;}
+    .section-head{padding:16px 18px;border-bottom:1px solid #e5e7eb;font-size:18px;font-weight:800;}
+    table{width:100%;border-collapse:collapse;font-size:14px;}
+    th,td{padding:12px 14px;border-bottom:1px solid #eef2f7;text-align:left;vertical-align:middle;}
+    th{background:#f8fafc;color:#64748b;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;}
+    .pill{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;border:1px solid transparent;}
+    .ok{background:#f0fdf4;color:#15803d;border-color:#bbf7d0;}
+    .warn{background:#fefce8;color:#ca8a04;border-color:#fde047;}
+    .bad{background:#fef2f2;color:#b91c1c;border-color:#fca5a5;}
+    .risk-low{background:#f0fdf4;color:#15803d;border-color:#bbf7d0;}
+    .risk-medium{background:#fefce8;color:#ca8a04;border-color:#fde047;}
+    .risk-high{background:#fff7ed;color:#c2410c;border-color:#fdba74;}
+    .risk-critical{background:#fef2f2;color:#b91c1c;border-color:#fca5a5;}
+    .empty{color:#64748b;}
+    .actions{margin-top:18px;}
+    button{background:#0f766e;color:#fff;border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;}
+    @media (max-width:800px){.stats{grid-template-columns:1fr 1fr;} .section{overflow:auto;} table{min-width:900px;}}
+    @media print{.actions{display:none;} body{margin:16px;}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="header">
+      <div class="header-top">
+        <div class="brand">
+          <div class="mark">KP</div>
+          <div>
+            <div class="kicker">${companyName}</div>
+            <h1>Portfolio KPI Report</h1>
+            <div class="subtitle">Multi-project summary across all saved projects · Prepared by ${preparedBy}</div>
+          </div>
+        </div>
+        <div class="badge">Prepared ${new Date().toLocaleDateString('en-CA', { year:'numeric', month:'short', day:'numeric' })}</div>
+      </div>
+    </section>
+
+    <div class="stats">
+      <div class="stat"><span class="label">Saved Projects</span><span class="value">${entries.length}</span></div>
+      <div class="stat"><span class="label">Total Budget</span><span class="value">${money(totalBudget)}</span></div>
+      <div class="stat"><span class="label">Total Actual Cost</span><span class="value">${money(totalCost)}</span></div>
+      <div class="stat"><span class="label">Avg Anticipated Margin</span><span class="value">${pct(avgMargin)}</span></div>
+    </div>
+
+    <div class="stats" style="margin-top:-6px;">
+      <div class="stat"><span class="label">Avg Budget Used</span><span class="value">${pct(avgBudgetUsed)}</span></div>
+      <div class="stat"><span class="label">Healthy Projects</span><span class="value">${entries.filter(([,r]) => getStatus(calculateMetricsFromData(r.data || {}).budgetUsed).className === 'ok').length}</span></div>
+      <div class="stat"><span class="label">Warning / Over</span><span class="value">${entries.filter(([,r]) => getStatus(calculateMetricsFromData(r.data || {}).budgetUsed).className !== 'ok').length}</span></div>
+      <div class="stat"><span class="label">High / Critical Risk</span><span class="value">${entries.filter(([,r]) => ['risk-high','risk-critical'].includes(getRiskFromMetrics(calculateMetricsFromData(r.data || {})).riskClass)).length}</span></div>
+    </div>
+
+    <section class="section">
+      <div class="section-head">Saved Projects Summary</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Budget</th>
+            <th>Actual Cost</th>
+            <th>Anticipated Cost</th>
+            <th>Anticipated Profit</th>
+            <th>Anticipated Margin</th>
+            <th>Status</th>
+            <th>Risk</th>
+            <th>Updated</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </section>
+
+    <div class="actions"><button onclick="window.print()">Print / Save as PDF</button></div>
+  </div>
+</body>
+</html>`;
+    }
+
+    function buildPrintHtml() {
+      const appSettings = getAppSettings();
+      const companyName = appSettings.companyName || 'KimiaPro';
+      const preparedBy = appSettings.preparedBy || '—';
+      const metrics = currentMetrics();
+      const statusText = $('sumStatus').textContent || 'OK';
+      const budgetBarHeight = metrics.budget > 0 ? 100 : 0;
+      const costBarHeight = Math.min(metrics.budgetUsed, 100);
+      const hoursBarHeight = Math.min(metrics.hoursUsedPct, 100);
+      const profitBarHeight = Math.min(Math.max(Math.abs(metrics.margin), 0), 100);
+      const costBarClass = statusText === 'Over Budget' ? 'bad' : (statusText === 'Warning' ? 'warn' : 'ok');
+      const profitBarClass = metrics.margin >= 20 ? 'ok' : (metrics.margin >= 0 ? 'warn' : 'bad');
+
+      const sortedHistory = historySnapshots.slice().sort((a, b) => {
+        const ta = a.savedAt ? new Date(a.savedAt).getTime() : 0;
+        const tb = b.savedAt ? new Date(b.savedAt).getTime() : 0;
+        return ta - tb;
+      });
+
+      const historyHtml = sortedHistory.length
+        ? sortedHistory.slice().reverse().map((snap) => `
+          <div class="report-history-item">
+            <div class="report-history-top">
+              <span>${snap.name || 'Snapshot'}</span>
+              <span>${snap.dateLabel}</span>
+            </div>
+            <div class="report-history-sub">
+              <span>Budget: ${money(snap.budget)}</span>
+              <span>Cost: ${money(snap.totalCost)}</span>
+              <span>Hours: ${snap.hoursUsedPct.toFixed(1)}%</span>
+              <span>Margin: ${(snap.margin || 0).toFixed(1)}%</span>
+              <span>Status: ${snap.statusLabel}</span>
+            </div>
+            ${snap.note ? `<div style="margin-top:8px;font-size:12px;line-height:1.4;color:#1f2937;background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:8px 10px;">${snap.note}</div>` : ''}
+          </div>
+        `).join('')
+        : '<div style="color:#64748b;">No saved history snapshots yet.</div>';
+
+      const compareMaxCost = Math.max(metrics.budget, metrics.totalCost, metrics.anticipatedTotalCost, 1);
+      const compareMaxHours = Math.max(metrics.plannedHours, metrics.actualHours, metrics.anticipatedHours, 1);
+      const compareMaxProfit = Math.max(Math.abs(metrics.plannedProfit), Math.abs(metrics.profit), Math.abs(metrics.anticipatedProfit), 1);
+
+      const compareRow = (label, value, max, kind, text) => `
+        <div class="report-compare-row">
+          <div class="report-compare-label">${label}</div>
+          <div class="report-compare-track"><div class="report-compare-fill ${kind}" style="width:${Math.min((Math.abs(value) / max) * 100, 100)}%"></div></div>
+          <div class="report-compare-value">${text}</div>
+        </div>
+      `;
+
+      const actualCostVariance = metrics.totalCost - metrics.budget;
+      const actualHoursVariance = metrics.actualHours - metrics.plannedHours;
+      const actualProfitVariance = metrics.profit - metrics.plannedProfit;
+      const anticipatedCostVariance = metrics.anticipatedTotalCost - metrics.budget;
+      const anticipatedHoursVariance = metrics.anticipatedHours - metrics.plannedHours;
+      const anticipatedProfitVariance = metrics.anticipatedProfit - metrics.plannedProfit;
+      const varianceState = (value, mode) => {
+        if (mode === 'profit') return value < 0 ? 'bad' : (value === 0 ? 'warn' : 'ok');
+        return value > 0 ? 'bad' : (value === 0 ? 'warn' : 'ok');
+      };
+      const varianceCard = (title, value, sub, mode, formatter) => {
+        const state = varianceState(value, mode);
+        const sign = value > 0 ? '+' : '';
+        return `
+          <div class="report-variance-card ${state}">
+            <span class="rv-label">${title}</span>
+            <span class="rv-value">${sign}${formatter(value)}</span>
+            <span class="rv-sub">${sub}</span>
+          </div>
+        `;
+      };
+
+      const anticipatedCostRatio = metrics.budget > 0 ? (metrics.anticipatedTotalCost / metrics.budget) * 100 : 0;
+      const anticipatedHoursRatio = metrics.plannedHours > 0 ? (metrics.anticipatedHours / metrics.plannedHours) * 100 : 0;
+      let riskLevel = 'LOW';
+      let riskClass = 'risk-low';
+      if (metrics.anticipatedMargin < 5 || anticipatedCostRatio > 110 || anticipatedHoursRatio > 115) {
+        riskLevel = 'CRITICAL';
+        riskClass = 'risk-critical';
+      } else if (metrics.anticipatedMargin < 15 || anticipatedCostRatio > 100 || anticipatedHoursRatio > 105 || metrics.budgetUsed > 95) {
+        riskLevel = 'HIGH';
+        riskClass = 'risk-high';
+      } else if (metrics.anticipatedMargin < 30 || anticipatedCostRatio > 90 || anticipatedHoursRatio > 95 || metrics.budgetUsed > 80) {
+        riskLevel = 'MEDIUM';
+        riskClass = 'risk-medium';
+      }
+
+      const historyTrendSection = historySnapshots.length ? (() => {
+        const width = 760;
+        const height = 280;
+        const pad = { top: 24, right: 20, bottom: 34, left: 48 };
+        const innerW = width - pad.left - pad.right;
+        const innerH = height - pad.top - pad.bottom;
+        const points = sortedHistory;
+        const maxMoney = Math.max(1, ...points.map((p) => Math.max(p.budget, p.totalCost)));
+        const maxPercent = Math.max(100, ...points.map((p) => Math.max(p.hoursUsedPct, Math.abs(p.margin || 0))));
+        const stepX = points.length > 1 ? innerW / (points.length - 1) : 0;
+        const moneyY = (v) => pad.top + innerH - (v / maxMoney) * innerH;
+        const percentY = (v) => pad.top + innerH - (v / maxPercent) * innerH;
+        const xAt = (i) => pad.left + (points.length > 1 ? i * stepX : innerW / 2);
+        const makePath = (arr, yFn) => arr.map((p, i) => `${i === 0 ? 'M' : 'L'} ${xAt(i)} ${yFn(p)}`).join(' ');
+        const budgetPath = makePath(points.map((p) => p.budget), moneyY);
+        const costPath = makePath(points.map((p) => p.totalCost), moneyY);
+        const hoursPath = makePath(points.map((p) => p.hoursUsedPct), percentY);
+        const marginPath = makePath(points.map((p) => Math.abs(p.margin || 0)), percentY);
+        const xLabels = points.map((p, i) => `
+          <text x="${xAt(i)}" y="262" text-anchor="middle" fill="#64748b" font-size="11">${p.shortLabel}</text>
+          <text x="${xAt(i)}" y="276" text-anchor="middle" fill="#94a3b8" font-size="10">${p.name || ''}</text>
+        `).join('');
+        const budgetDots = points.map((p, i) => `<circle cx="${xAt(i)}" cy="${moneyY(p.budget)}" r="4" fill="#2563eb" />`).join('');
+        const costDots = points.map((p, i) => `<circle cx="${xAt(i)}" cy="${moneyY(p.totalCost)}" r="4" fill="#059669" />`).join('');
+        const hoursDots = points.map((p, i) => `<circle cx="${xAt(i)}" cy="${percentY(p.hoursUsedPct)}" r="4" fill="#ca8a04" />`).join('');
+        const marginDots = points.map((p, i) => `<circle cx="${xAt(i)}" cy="${percentY(Math.abs(p.margin || 0))}" r="4" fill="#7c3aed" />`).join('');
+        return `
+          <section class="report-section">
+            <h2>History Trend Chart</h2>
+            <svg viewBox="0 0 ${width} ${height}" style="width:100%;height:auto;display:block;border:1px solid #e5e7eb;border-radius:14px;background:linear-gradient(180deg,#ffffff,#fbfdff);padding:10px;">
+              <line x1="${pad.left}" y1="${pad.top + innerH}" x2="${width - pad.right}" y2="${pad.top + innerH}" stroke="#cbd5e1" stroke-width="1" />
+              <line x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${pad.top + innerH}" stroke="#cbd5e1" stroke-width="1" />
+              <path d="${budgetPath}" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="${costPath}" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="${hoursPath}" fill="none" stroke="#ca8a04" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 4" />
+              <path d="${marginPath}" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 3" />
+              ${budgetDots}
+              ${costDots}
+              ${hoursDots}
+              ${marginDots}
+              ${xLabels}
+            </svg>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;color:#64748b;font-size:13px;font-weight:700;">
+              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#2563eb;margin-right:6px;"></span>Budget</span>
+              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#059669;margin-right:6px;"></span>Total Cost</span>
+              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ca8a04;margin-right:6px;"></span>Hours Used %</span>
+              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#7c3aed;margin-right:6px;"></span>Margin %</span>
+            </div>
+          </section>
+        `;
+      })() : '';
+
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#0f766e" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./assets/icons/icon-180.png" />
+  <title>${companyName} Project KPI Report</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; margin: 24px; color: #1f2937; background:#ffffff; }
+    h1 { margin: 0 0 6px; color: #0f766e; }
+    h2 { margin: 0; }
+    p { margin: 0 0 20px; color: #6b7280; }
+    .report-shell { max-width: 1020px; margin: 0 auto; }
+    .report-header { border: 1px solid #dbe4ea; border-radius: 18px; overflow: hidden; margin-bottom: 20px; }
+    .report-header-top { background: linear-gradient(135deg, #0f766e, #115e59); color: white; padding: 20px 22px; display:flex; justify-content:space-between; gap:16px; align-items:flex-start; flex-wrap:wrap; }
+    .report-brand { display:flex; gap:14px; align-items:center; }
+    .report-brand-mark { width:46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; background: rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.22); font-weight:800; }
+    .report-kicker { font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; opacity:.82; margin-bottom:4px; }
+    .report-title { font-size:28px; font-weight:800; line-height:1.05; margin:0; }
+    .report-subtitle { font-size:13px; opacity:.9; margin-top:6px; }
+    .report-badge { padding:10px 14px; border-radius:999px; background: rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); font-size:12px; font-weight:800; white-space:nowrap; }
+    .report-meta { padding: 16px 22px; background:#f8fafc; display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:12px; border-top:1px solid #dbe4ea; }
+    .report-meta-item { border:1px solid #e5e7eb; border-radius:12px; background:#ffffff; padding:10px 12px; }
+    .report-meta-label { display:block; font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; }
+    .report-meta-value { display:block; font-size:14px; font-weight:800; color:#1f2937; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; }
+    .item { padding: 10px 0; border-bottom: 1px solid #e5e7eb; }
+    .label { display: block; font-size: 12px; color: #6b7280; font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .03em; }
+    .value { font-size: 16px; font-weight: 700; }
+    .full { grid-column: 1 / -1; }
+    .status { display: inline-block; margin-top: 18px; padding: 10px 14px; border-radius: 10px; font-weight: 700; background: ${statusText === 'Over Budget' ? '#fef2f2' : (statusText === 'Warning' ? '#fefce8' : '#f0fdf4')}; color: ${statusText === 'Over Budget' ? '#b91c1c' : (statusText === 'Warning' ? '#a16207' : '#15803d')}; border: 1px solid ${statusText === 'Over Budget' ? '#fca5a5' : (statusText === 'Warning' ? '#fde047' : '#bbf7d0')}; }
+    .actions { margin-top: 22px; }
+    button { background: #0f766e; color: white; border: none; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
+    .report-section { margin-top: 24px; padding-top: 18px; border-top: 1px solid #e5e7eb; }
+    .report-mini-chart { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-top: 14px; padding: 14px; border: 1px solid #e5e7eb; border-radius: 14px; background: #fbfdff; }
+    .report-mini-col { flex: 1; text-align: center; }
+    .report-mini-shell { height: 120px; max-width: 90px; margin: 0 auto 10px; display: flex; align-items: end; justify-content: center; background: linear-gradient(180deg,#f3f4f6,#e5e7eb); border-radius: 14px 14px 10px 10px; overflow: hidden; }
+    .report-mini-bar { width: 100%; border-radius: 14px 14px 10px 10px; }
+    .report-mini-bar.budget { background: linear-gradient(180deg,#60a5fa,#2563eb); height: ${budgetBarHeight}%; }
+    .report-mini-bar.cost.ok { background: linear-gradient(180deg,#34d399,#059669); height: ${costBarHeight}%; }
+    .report-mini-bar.cost.warn { background: linear-gradient(180deg,#fde68a,#eab308); height: ${costBarHeight}%; }
+    .report-mini-bar.cost.bad { background: linear-gradient(180deg,#fca5a5,#dc2626); height: ${costBarHeight}%; }
+    .report-mini-bar.profit.ok { background: linear-gradient(180deg,#34d399,#059669); height: ${profitBarHeight}%; }
+    .report-mini-bar.profit.warn { background: linear-gradient(180deg,#fde68a,#eab308); height: ${profitBarHeight}%; }
+    .report-mini-bar.profit.bad { background: linear-gradient(180deg,#fca5a5,#dc2626); height: ${profitBarHeight}%; }
+    .report-mini-bar.hours { background: linear-gradient(180deg,#facc15,#ca8a04); height: ${hoursBarHeight}%; }
+    .report-history-list { display: grid; gap: 10px; margin-top: 14px; }
+    .report-history-item { border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px 12px; background: #ffffff; }
+    .report-history-top { display: flex; justify-content: space-between; gap: 12px; font-weight: 700; margin-bottom: 6px; }
+    .report-history-sub { font-size: 0.88rem; color: #64748b; display: flex; flex-wrap: wrap; gap: 12px; }
+    .report-compare-grid { display:grid; gap:16px; margin-top:14px; }
+    .report-compare-card { border:1px solid #e5e7eb; border-radius:14px; padding:14px; background:#ffffff; }
+    .report-compare-card h3 { margin:0 0 6px; font-size:15px; }
+    .report-compare-sub { color:#64748b; font-size:12px; font-weight:700; margin-bottom:10px; }
+    .report-compare-rows { display:grid; gap:8px; }
+    .report-compare-row { display:grid; grid-template-columns:90px 1fr 90px; gap:10px; align-items:center; }
+    .report-compare-label { font-size:12px; font-weight:700; color:#64748b; }
+    .report-compare-track { height:12px; background:#e5e7eb; border-radius:999px; overflow:hidden; }
+    .report-compare-fill { height:100%; border-radius:999px; }
+    .report-compare-fill.planned { background:#94a3b8; }
+    .report-compare-fill.actual { background:#2563eb; }
+    .report-compare-fill.anticipated { background:#ea580c; }
+    .report-compare-value { text-align:right; font-size:12px; font-weight:800; }
+    .report-variance-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; margin-top:14px; }
+    .report-variance-card { border:1px solid #e5e7eb; border-radius:14px; background:#fbfdff; padding:12px 14px; }
+    .report-variance-card.ok .rv-value { color:#15803d; }
+    .report-variance-card.warn .rv-value { color:#ca8a04; }
+    .report-variance-card.bad .rv-value { color:#b91c1c; }
+    .rv-label { display:block; font-size:12px; color:#64748b; font-weight:700; margin-bottom:6px; }
+    .rv-value { display:block; font-size:16px; font-weight:800; }
+    .rv-sub { display:block; margin-top:6px; font-size:12px; color:#64748b; }
+    .report-risk-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+    .report-risk-badge { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:999px; font-weight:800; border:1px solid transparent; }
+    .report-risk-badge.risk-low { background:#f0fdf4; color:#15803d; border-color:#bbf7d0; }
+    .report-risk-badge.risk-medium { background:#fefce8; color:#ca8a04; border-color:#fde047; }
+    .report-risk-badge.risk-high { background:#fff7ed; color:#c2410c; border-color:#fdba74; }
+    .report-risk-badge.risk-critical { background:#fef2f2; color:#b91c1c; border-color:#fca5a5; }
+    .report-risk-grid { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:12px; }
+    .report-risk-card { border:1px solid #e5e7eb; border-radius:14px; background:#fbfdff; padding:12px 14px; }
+    .rr-label { display:block; font-size:12px; color:#64748b; font-weight:700; margin-bottom:6px; }
+    .rr-value { display:block; font-size:16px; font-weight:800; }
+    .rr-sub { display:block; margin-top:6px; font-size:12px; color:#64748b; }
+    @media print { .actions { display: none; } body { margin: 16px; } }
+    @media (max-width: 800px) {
+      .report-meta, .report-variance-grid, .report-risk-grid { grid-template-columns:1fr; }
+      .report-compare-row { grid-template-columns:72px 1fr 76px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="report-shell">
+    <section class="report-header">
+      <div class="report-header-top">
+        <div class="report-brand">
+          <div class="report-brand-mark">KP</div>
+          <div>
+            <div class="report-kicker">${companyName}</div>
+            <h1 class="report-title">Project KPI Report</h1>
+            <div class="report-subtitle">Professional project controls summary for print and PDF export · Prepared by ${preparedBy}</div>
+          </div>
+        </div>
+        <div class="report-badge">Prepared ${new Date().toLocaleDateString('en-CA', { year:'numeric', month:'short', day:'numeric' })}</div>
+      </div>
+      <div class="report-meta">
+        <div class="report-meta-item"><span class="report-meta-label">Project</span><span class="report-meta-value">${$('sumProjectName').textContent}</span></div>
+        <div class="report-meta-item"><span class="report-meta-label">Client / Owner</span><span class="report-meta-value">${$('sumClient').textContent}</span></div>
+        <div class="report-meta-item"><span class="report-meta-label">Project Ref</span><span class="report-meta-value">${$('sumProjectRef').textContent}</span></div>
+        <div class="report-meta-item"><span class="report-meta-label">Reporting Period</span><span class="report-meta-value">${$('sumDateRange').textContent}</span></div>
+      </div>
+    </section>
+
+    <div class="grid">
+    <div class="item"><span class="label">Project Name</span><span class="value">${$('sumProjectName').textContent}</span></div>
+    <div class="item"><span class="label">Client / Owner</span><span class="value">${$('sumClient').textContent}</span></div>
+    <div class="item"><span class="label">Project ID / Quote / PO</span><span class="value">${$('sumProjectRef').textContent}</span></div>
+    <div class="item"><span class="label">Currency</span><span class="value">${$('sumCurrency').textContent}</span></div>
+    <div class="item"><span class="label">Budget</span><span class="value">${$('sumBudget').textContent}</span></div>
+    <div class="item"><span class="label">Estimated Total Cost</span><span class="value">${$('sumForecastTotalCost').textContent}</span></div>
+    <div class="item"><span class="label">Estimated Profit</span><span class="value">${$('sumForecastProfit').textContent}</span></div>
+    <div class="item"><span class="label">Estimated Margin</span><span class="value">${$('sumForecastMargin').textContent}</span></div>
+    <div class="item"><span class="label">Revenue / Contract Value</span><span class="value">${$('sumRevenue').textContent}</span></div>
+    <div class="item"><span class="label">Total Cost</span><span class="value">${$('sumTotalCost').textContent}</span></div>
+    <div class="item"><span class="label">Remaining Budget</span><span class="value">${$('sumRemaining').textContent}</span></div>
+    <div class="item"><span class="label">Budget Used</span><span class="value">${$('sumBudgetPct').textContent}</span></div>
+    <div class="item"><span class="label">Planned Hours</span><span class="value">${$('sumPlannedHours').textContent}</span></div>
+    <div class="item"><span class="label">Actual Hours</span><span class="value">${$('sumActualHours').textContent}</span></div>
+    <div class="item"><span class="label">Hours Variance</span><span class="value">${$('sumHoursVariance').textContent}</span></div>
+    <div class="item"><span class="label">Profit</span><span class="value">${$('sumProfit').textContent}</span></div>
+    <div class="item"><span class="label">Margin</span><span class="value">${$('sumMargin').textContent}</span></div>
+    <div class="item"><span class="label">Date Range</span><span class="value">${$('sumDateRange').textContent}</span></div>
+    <div class="item full"><span class="label">Notes</span><span class="value">${$('sumNotes').textContent}</span></div>
+  </div>
+  <div class="status">Overall Status: ${statusText}</div>
+
+  <section class="report-section">
+    <h2>KPI Visual Summary</h2>
+    <div class="report-mini-chart">
+      <div class="report-mini-col">
+        <div class="report-mini-shell"><div class="report-mini-bar budget"></div></div>
+        <div class="value">${money(metrics.budget)}</div>
+        <div class="label">Budget</div>
+      </div>
+      <div class="report-mini-col">
+        <div class="report-mini-shell"><div class="report-mini-bar cost ${costBarClass}"></div></div>
+        <div class="value">${money(metrics.totalCost)}</div>
+        <div class="label">Total Cost</div>
+      </div>
+      <div class="report-mini-col">
+        <div class="report-mini-shell"><div class="report-mini-bar profit ${profitBarClass}"></div></div>
+        <div class="value">${pct(metrics.margin)}</div>
+        <div class="label">Profit Margin</div>
+      </div>
+      <div class="report-mini-col">
+        <div class="report-mini-shell"><div class="report-mini-bar hours"></div></div>
+        <div class="value">${pct(metrics.hoursUsedPct)}</div>
+        <div class="label">Hours Used vs Plan</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="report-section">
+    <h2>Planned vs Actual vs Anticipated</h2>
+    <div class="report-compare-grid">
+      <div class="report-compare-card">
+        <h3>Total Cost</h3>
+        <div class="report-compare-sub">Project budget baseline vs current actuals vs anticipated finish</div>
+        <div class="report-compare-rows">
+          ${compareRow('Planned', metrics.budget, compareMaxCost, 'planned', money(metrics.budget))}
+          ${compareRow('Actual', metrics.totalCost, compareMaxCost, 'actual', money(metrics.totalCost))}
+          ${compareRow('Anticipated', metrics.anticipatedTotalCost, compareMaxCost, 'anticipated', money(metrics.anticipatedTotalCost))}
+        </div>
+      </div>
+      <div class="report-compare-card">
+        <h3>Hours</h3>
+        <div class="report-compare-sub">Planned effort vs actual spent vs anticipated finish</div>
+        <div class="report-compare-rows">
+          ${compareRow('Planned', metrics.plannedHours, compareMaxHours, 'planned', hours(metrics.plannedHours))}
+          ${compareRow('Actual', metrics.actualHours, compareMaxHours, 'actual', hours(metrics.actualHours))}
+          ${compareRow('Anticipated', metrics.anticipatedHours, compareMaxHours, 'anticipated', hours(metrics.anticipatedHours))}
+        </div>
+      </div>
+      <div class="report-compare-card">
+        <h3>Profit</h3>
+        <div class="report-compare-sub">Estimated at plan vs current actual vs anticipated finish</div>
+        <div class="report-compare-rows">
+          ${compareRow('Planned', metrics.plannedProfit, compareMaxProfit, 'planned', money(metrics.plannedProfit))}
+          ${compareRow('Actual', metrics.profit, compareMaxProfit, 'actual', money(metrics.profit))}
+          ${compareRow('Anticipated', metrics.anticipatedProfit, compareMaxProfit, 'anticipated', money(metrics.anticipatedProfit))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="report-section">
+    <h2>Variance Analysis</h2>
+    <div class="report-variance-grid">
+      ${varianceCard('Actual Cost Variance', actualCostVariance, 'Actual Total Cost vs Planned Budget', 'cost', money)}
+      ${varianceCard('Actual Hours Variance', actualHoursVariance, 'Actual Hours vs Planned Hours', 'cost', hours)}
+      ${varianceCard('Actual Profit Variance', actualProfitVariance, 'Actual Profit vs Planned Profit', 'profit', money)}
+      ${varianceCard('Anticipated Cost Variance', anticipatedCostVariance, 'Anticipated Finish Cost vs Planned Budget', 'cost', money)}
+      ${varianceCard('Anticipated Hours Variance', anticipatedHoursVariance, 'Anticipated Finish Hours vs Planned Hours', 'cost', hours)}
+      ${varianceCard('Anticipated Profit Variance', anticipatedProfitVariance, 'Anticipated Profit vs Planned Profit', 'profit', money)}
+    </div>
+  </section>
+
+  <section class="report-section">
+    <div class="report-risk-head">
+      <h2 style="margin:0;">Project Risk Level</h2>
+      <div class="report-risk-badge ${riskClass}">${riskLevel}</div>
+    </div>
+    <div class="report-risk-grid">
+      <div class="report-risk-card">
+        <span class="rr-label">Budget Used</span>
+        <span class="rr-value">${pct(metrics.budgetUsed)}</span>
+        <span class="rr-sub">Current actual cost burn</span>
+      </div>
+      <div class="report-risk-card">
+        <span class="rr-label">Anticipated Cost vs Budget</span>
+        <span class="rr-value">${pct(anticipatedCostRatio)}</span>
+        <span class="rr-sub">Expected finish cost ratio</span>
+      </div>
+      <div class="report-risk-card">
+        <span class="rr-label">Anticipated Margin</span>
+        <span class="rr-value">${pct(metrics.anticipatedMargin)}</span>
+        <span class="rr-sub">Expected finish margin</span>
+      </div>
+      <div class="report-risk-card">
+        <span class="rr-label">Anticipated Hours vs Plan</span>
+        <span class="rr-value">${pct(anticipatedHoursRatio)}</span>
+        <span class="rr-sub">Expected finish hours ratio</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="report-section">
+    <h2>History Snapshots</h2>
+    <div class="report-history-list">${historyHtml}</div>
+  </section>
+
+  ${historyTrendSection}
+
+  <div class="actions"><button onclick="window.print()">Print / Save as PDF</button></div>
+
+    
+
+  <footer style="margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;color:#64748b;font-size:13px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+    <div><strong style="color:#1f2937;">KimiaPro Project KPI Report</strong> - professional offline project performance dashboard.</div>
+    <div>Made by <strong style="color:#1f2937;">KimiaPro</strong> - Tools for engineers, managers, and technical professionals</div>
+  </footer>
+  <div style="margin-top:10px;color:#64748b;font-size:12px;line-height:1.5;">
+    Copyright (c) 2026 KimiaPro. Licensed, not sold. For purchaser use only. Redistribution, resale, reposting, or reuse as a separate commercial product is not permitted. This tool is provided as-is; users remain responsible for independent review of all inputs, outputs, assumptions, and decisions.
+  </div>
+  </div>
+</body>
+</html>`;
+    }
+
+    function update() {
+      const metrics = currentMetrics();
+
+      $('laborCostManual').value = metrics.laborCost ? metrics.laborCost.toFixed(2) : '';
+      $('estimatedOtherCost').value = metrics.forecastOtherCost.toFixed(2);
+      $('budgetUsedPct').textContent = pct(metrics.budgetUsed);
+      $('remainingBudget').textContent = money(metrics.remaining);
+      $('totalCost').textContent = money(metrics.totalCost);
+      $('hoursVariance').textContent = hours(metrics.hoursVariance);
+      $('profitValue').textContent = money(metrics.profit);
+      $('marginValue').textContent = pct(metrics.margin);
+
+      const progressBar = $('budgetBar');
+      if (progressBar) {
+        progressBar.style.width = `${Math.min(metrics.budgetUsed, 100)}%`;
+        if (metrics.budgetUsed > 100) progressBar.style.background = '#dc2626';
+        else if (metrics.budgetUsed >= 80) progressBar.style.background = '#eab308';
+        else progressBar.style.background = '#16a34a';
+      }
+
+      ['budgetUsedPct', 'remainingBudget', 'totalCost', 'hoursVariance', 'profitValue', 'marginValue'].forEach((id) => autoFit($(id)));
+
+      document.querySelectorAll('.kpi').forEach((kpi) => {
+        kpi.classList.remove('kpi-ok', 'kpi-warn', 'kpi-bad');
+        kpi.classList.add(`kpi-${metrics.status.className}`);
+      });
+
+      ['kpiProfit', 'kpiMargin'].forEach((id) => {
+        const kpi = $(id);
+        if (!kpi) return;
+        kpi.classList.remove('kpi-ok', 'kpi-warn', 'kpi-bad');
+        if (metrics.margin >= 20) kpi.classList.add('kpi-ok');
+        else if (metrics.margin >= 0) kpi.classList.add('kpi-warn');
+        else kpi.classList.add('kpi-bad');
+      });
+
+      const statusBox = $('statusBox');
+      statusBox.className = `status-box ${metrics.status.className}`;
+      statusBox.textContent = `Status: ${metrics.status.label}`;
+
+      $('sumProjectName').textContent = $('projectName').value || '—';
+      $('sumClient').textContent = $('client').value || '—';
+      $('sumProjectRef').textContent = $('projectRef').value || '—';
+      $('sumCurrency').textContent = currentCurrency();
+      $('sumBudget').textContent = money(metrics.budget);
+      $('sumForecastTotalCost').textContent = money(metrics.forecastTotalCost);
+      $('sumForecastProfit').textContent = money(metrics.forecastProfit);
+      $('sumForecastMargin').textContent = pct(metrics.forecastMargin);
+      $('sumRevenue').textContent = money(metrics.revenue);
+      $('sumTotalCost').textContent = money(metrics.totalCost);
+      $('sumRemaining').textContent = money(metrics.remaining);
+      $('sumBudgetPct').textContent = pct(metrics.budgetUsed);
+      $('sumPlannedHours').textContent = hours(metrics.plannedHours);
+      $('sumActualHours').textContent = hours(metrics.actualHours);
+      $('sumHoursVariance').textContent = hours(metrics.hoursVariance);
+      $('sumProfit').textContent = money(metrics.profit);
+      $('sumMargin').textContent = pct(metrics.margin);
+      $('sumNotes').textContent = $('notes').value || '—';
+      $('sumStatus').textContent = metrics.status.label;
+      const start = $('startDate').value;
+      const end = $('endDate').value;
+      $('sumDateRange').textContent = start || end ? `${formatDate(start)} to ${formatDate(end)}` : '—';
+
+      $('forecastTotalCostText').textContent = money(metrics.forecastTotalCost);
+      $('forecastProfitText').textContent = money(metrics.forecastProfit);
+      $('forecastMarginText').textContent = pct(metrics.forecastMargin);
+      const forecastDiff = metrics.forecastTotalCost - metrics.totalCost;
+      let forecastVsActual = 'On target';
+      if (forecastDiff > 0) forecastVsActual = `Forecast +${money(Math.abs(forecastDiff))}`;
+      else if (forecastDiff < 0) forecastVsActual = `Forecast -${money(Math.abs(forecastDiff))}`;
+      $('forecastVsActualText').textContent = forecastVsActual;
+      $('anticipatedTotalCost').value = money(metrics.anticipatedTotalCost);
+      $('anticipatedProfit').value = money(metrics.anticipatedProfit);
+      $('anticipatedMargin').value = pct(metrics.anticipatedMargin);
+      $('remainingLaborCost').value = money(metrics.anticipatedRemainingLaborCost);
+
+      const chipBudgetUsed = $('chipBudgetUsed');
+      const chipMargin = $('chipMargin');
+      const chipProfit = $('chipProfit');
+      const chipStatus = $('chipStatus');
+      if (chipBudgetUsed) chipBudgetUsed.textContent = pct(metrics.budgetUsed);
+      if (chipMargin) chipMargin.textContent = pct(metrics.margin);
+      if (chipProfit) chipProfit.textContent = money(metrics.profit);
+      if (chipStatus) chipStatus.textContent = metrics.status.label;
+
+      const budgetChartBar = $('budgetChartBar');
+      const costChartBar = $('costChartBar');
+      const hoursChartBar = $('hoursChartBar');
+      const profitChartBar = $('profitChartBar');
+
+      if (budgetChartBar) budgetChartBar.style.height = `${metrics.budget > 0 ? 100 : 0}%`;
+      if (costChartBar) {
+        costChartBar.style.height = `${Math.min(metrics.budgetUsed, 100)}%`;
+        costChartBar.classList.remove('bar-ok', 'bar-warn', 'bar-bad');
+        costChartBar.classList.add(`bar-${metrics.status.className}`);
+      }
+      if (hoursChartBar) hoursChartBar.style.height = `${Math.min(metrics.hoursUsedPct, 100)}%`;
+      if (profitChartBar) {
+        profitChartBar.style.height = `${Math.min(Math.max(Math.abs(metrics.margin), 0), 100)}%`;
+        profitChartBar.classList.remove('bar-ok', 'bar-warn', 'bar-bad');
+        if (metrics.margin >= 20) profitChartBar.classList.add('bar-ok');
+        else if (metrics.margin >= 0) profitChartBar.classList.add('bar-warn');
+        else profitChartBar.classList.add('bar-bad');
+      }
+
+      const compareMaxCost = Math.max(metrics.budget, metrics.totalCost, metrics.anticipatedTotalCost, 1);
+      const actualCostVariance = metrics.totalCost - metrics.budget;
+      const actualHoursVariance = metrics.actualHours - metrics.plannedHours;
+      const actualProfitVariance = metrics.profit - metrics.plannedProfit;
+      const anticipatedCostVariance = metrics.anticipatedTotalCost - metrics.budget;
+      const anticipatedHoursVariance = metrics.anticipatedHours - metrics.plannedHours;
+      const anticipatedProfitVariance = metrics.anticipatedProfit - metrics.plannedProfit;
+
+      const varianceState = (value, betterWhenLower = false) => {
+        if (betterWhenLower) {
+          if (value <= 0) return 'ok';
+          if (value <= Math.max(1, Math.abs(value)) * 0.000001 + (betterWhenLower ? 0 : 0)) return 'ok';
+          return value > 0 ? (value >= 0 ? (value > 0 && value / Math.max(1, Math.abs(value)) >= 0 ? 'bad' : 'warn') : 'ok') : 'ok';
+        }
+        if (value < 0) return 'bad';
+        if (value === 0) return 'warn';
+        return 'ok';
+      };
+
+      const setVariance = (cardId, valueId, value, formatter, state) => {
+        const card = $(cardId);
+        const valueEl = $(valueId);
+        if (card) {
+          card.classList.remove('v-ok', 'v-warn', 'v-bad');
+          card.classList.add(`v-${state}`);
+        }
+        if (valueEl) {
+          const sign = value > 0 ? '+' : '';
+          valueEl.textContent = formatter === hours ? `${sign}${formatter(value)}` : `${sign}${formatter(value)}`;
+        }
+      };
+
+      const costVarState = (v) => v > 0 ? 'bad' : (v === 0 ? 'warn' : 'ok');
+      const hoursVarState = (v) => v > 0 ? 'bad' : (v === 0 ? 'warn' : 'ok');
+      const profitVarState = (v) => v < 0 ? 'bad' : (v === 0 ? 'warn' : 'ok');
+
+      setVariance('varCostActualCard', 'varCostActual', actualCostVariance, money, costVarState(actualCostVariance));
+      setVariance('varHoursActualCard', 'varHoursActual', actualHoursVariance, hours, hoursVarState(actualHoursVariance));
+      setVariance('varProfitActualCard', 'varProfitActual', actualProfitVariance, money, profitVarState(actualProfitVariance));
+      setVariance('varCostAnticipatedCard', 'varCostAnticipated', anticipatedCostVariance, money, costVarState(anticipatedCostVariance));
+      setVariance('varHoursAnticipatedCard', 'varHoursAnticipated', anticipatedHoursVariance, hours, hoursVarState(anticipatedHoursVariance));
+      setVariance('varProfitAnticipatedCard', 'varProfitAnticipated', anticipatedProfitVariance, money, profitVarState(anticipatedProfitVariance));
+      const compareMaxHours = Math.max(metrics.plannedHours, metrics.actualHours, metrics.anticipatedHours, 1);
+      const compareMaxProfit = Math.max(Math.abs(metrics.plannedProfit), Math.abs(metrics.profit), Math.abs(metrics.anticipatedProfit), 1);
+
+      const ratioStatus = (ratio) => {
+        if (ratio > 1) return 'bad';
+        if (ratio >= 0.8) return 'warn';
+        return 'ok';
+      };
+
+      const profitStatus = (value, baseline) => {
+        if (value < 0) return 'bad';
+        if (baseline <= 0) return 'ok';
+        if (value < baseline) return 'warn';
+        return 'ok';
+      };
+
+      const setCompare = (barId, valId, value, max, formatter, labelId, state) => {
+        const bar = $(barId);
+        const label = $(valId);
+        const rowLabel = $(labelId);
+        if (bar) bar.style.width = `${Math.min((Math.abs(value) / max) * 100, 100)}%`;
+        if (label) {
+          label.textContent = formatter(value);
+          label.classList.remove('compare-ok', 'compare-warn', 'compare-bad', 'compare-neutral');
+          if (state) label.classList.add(`compare-${state}`);
+        }
+        if (rowLabel) {
+          rowLabel.classList.remove('compare-ok', 'compare-warn', 'compare-bad', 'compare-neutral');
+          if (state) rowLabel.classList.add(`compare-${state}`);
+        }
+      };
+
+      setCompare('cmpCostPlanned', 'cmpCostPlannedVal', metrics.budget, compareMaxCost, money, 'cmpCostPlannedLbl', 'neutral');
+      setCompare('cmpCostActual', 'cmpCostActualVal', metrics.totalCost, compareMaxCost, money, 'cmpCostActualLbl', ratioStatus(metrics.budget > 0 ? metrics.totalCost / metrics.budget : 0));
+      setCompare('cmpCostAnticipated', 'cmpCostAnticipatedVal', metrics.anticipatedTotalCost, compareMaxCost, money, 'cmpCostAnticipatedLbl', ratioStatus(metrics.budget > 0 ? metrics.anticipatedTotalCost / metrics.budget : 0));
+
+      setCompare('cmpHoursPlanned', 'cmpHoursPlannedVal', metrics.plannedHours, compareMaxHours, hours, 'cmpHoursPlannedLbl', 'neutral');
+      setCompare('cmpHoursActual', 'cmpHoursActualVal', metrics.actualHours, compareMaxHours, hours, 'cmpHoursActualLbl', ratioStatus(metrics.plannedHours > 0 ? metrics.actualHours / metrics.plannedHours : 0));
+      setCompare('cmpHoursAnticipated', 'cmpHoursAnticipatedVal', metrics.anticipatedHours, compareMaxHours, hours, 'cmpHoursAnticipatedLbl', ratioStatus(metrics.plannedHours > 0 ? metrics.anticipatedHours / metrics.plannedHours : 0));
+
+      setCompare('cmpProfitPlanned', 'cmpProfitPlannedVal', metrics.plannedProfit, compareMaxProfit, money, 'cmpProfitPlannedLbl', 'neutral');
+      setCompare('cmpProfitActual', 'cmpProfitActualVal', metrics.profit, compareMaxProfit, money, 'cmpProfitActualLbl', profitStatus(metrics.profit, metrics.plannedProfit));
+      setCompare('cmpProfitAnticipated', 'cmpProfitAnticipatedVal', metrics.anticipatedProfit, compareMaxProfit, money, 'cmpProfitAnticipatedLbl', profitStatus(metrics.anticipatedProfit, metrics.plannedProfit));
+
+      $('budgetChartValue').textContent = money(metrics.budget);
+      $('costChartValue').textContent = money(metrics.totalCost);
+      $('hoursChartValue').textContent = pct(metrics.hoursUsedPct);
+      $('profitChartValue').textContent = pct(metrics.margin);
+
+      let costTrend = 'On track';
+      if (metrics.budgetUsed >= 100) costTrend = 'Over budget';
+      else if (metrics.budgetUsed >= 80) costTrend = 'Approaching limit';
+
+      let hoursTrend = 'On track';
+      if (metrics.plannedHours > 0 && metrics.actualHours > metrics.plannedHours) hoursTrend = 'Over planned hours';
+      else if (metrics.plannedHours > 0 && metrics.actualHours >= metrics.plannedHours * 0.8) hoursTrend = 'Near planned hours';
+
+      let budgetHealth = 'Healthy';
+      if (metrics.budgetUsed >= 100) budgetHealth = 'Critical';
+      else if (metrics.budgetUsed >= 80) budgetHealth = 'Watch closely';
+
+      let profitTrend = 'Break-even';
+      if (metrics.profit > 0) profitTrend = metrics.margin >= 20 ? 'Strong margin' : 'Profitable';
+      else if (metrics.profit < 0) profitTrend = 'Loss-making';
+
+      $('costTrendText').textContent = costTrend;
+      $('hoursTrendText').textContent = hoursTrend;
+      $('budgetHealthText').textContent = budgetHealth;
+      $('profitTrendText').textContent = profitTrend;
+
+      const anticipatedCostRatio = metrics.budget > 0 ? (metrics.anticipatedTotalCost / metrics.budget) * 100 : 0;
+      const anticipatedHoursRatio = metrics.plannedHours > 0 ? (metrics.anticipatedHours / metrics.plannedHours) * 100 : 0;
+      let riskLevel = 'LOW';
+      let riskClass = 'risk-low';
+
+      if (
+        metrics.anticipatedMargin < 5 ||
+        anticipatedCostRatio > 110 ||
+        anticipatedHoursRatio > 115
+      ) {
+        riskLevel = 'CRITICAL';
+        riskClass = 'risk-critical';
+      } else if (
+        metrics.anticipatedMargin < 15 ||
+        anticipatedCostRatio > 100 ||
+        anticipatedHoursRatio > 105 ||
+        metrics.budgetUsed > 95
+      ) {
+        riskLevel = 'HIGH';
+        riskClass = 'risk-high';
+      } else if (
+        metrics.anticipatedMargin < 30 ||
+        anticipatedCostRatio > 90 ||
+        anticipatedHoursRatio > 95 ||
+        metrics.budgetUsed > 80
+      ) {
+        riskLevel = 'MEDIUM';
+        riskClass = 'risk-medium';
+      }
+
+      const riskBadge = $('riskBadge');
+      if (riskBadge) {
+        riskBadge.className = `risk-badge ${riskClass}`;
+        riskBadge.textContent = riskLevel;
+      }
+      $('riskBudgetUsed').textContent = pct(metrics.budgetUsed);
+      $('riskAnticipatedCost').textContent = pct(anticipatedCostRatio);
+      $('riskAnticipatedMargin').textContent = pct(metrics.anticipatedMargin);
+      $('riskAnticipatedHours').textContent = pct(anticipatedHoursRatio);
+
+      saveState();
+    }
+
+    ids.forEach((id) => {
+      const el = $(id);
+      if (!el) return;
+      el.addEventListener('input', update);
+      el.addEventListener('change', update);
+    });
+
+    $('printBtn').addEventListener('click', () => {
+      try {
+        window.print();
+      } catch (err) {
+        alert('Browser print is limited in this preview. Use Download Report HTML instead.');
+      }
+    });
+
+    $('downloadReportBtn').addEventListener('click', () => {
+      const html = buildPrintHtml();
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const safeName = ($('projectName').value || 'kimiapro-project-report')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      a.href = url;
+      a.download = `${safeName || 'kimiapro-project-report'}-report.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    $('downloadPortfolioReportBtn').addEventListener('click', () => {
+      const html = buildPortfolioReportHtml();
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'kimiapro-portfolio-report.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    $('saveJsonBtn').addEventListener('click', () => {
+      const payload = {
+        app: 'KimiaPro Project KPI Tracker',
+        version: '2.2',
+        exportedAt: new Date().toISOString(),
+        settings: getAppSettings(),
+        savedProjects: getSavedProjects(),
+        draft: getFormData(),
+        history: historySnapshots
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'kimiapro-projects-export.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    $('loadJsonBtn').addEventListener('click', () => $('jsonFileInput').click());
+
+    $('jsonFileInput').addEventListener('change', async (event) => {
+      const file = event.target.files ? event.target.files[0] : null;
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        if (parsed.savedProjects || parsed.settings || parsed.history) {
+          if (parsed.settings) saveAppSettings({ ...defaultAppSettings, ...parsed.settings });
+          if (parsed.savedProjects) persistSavedProjects(parsed.savedProjects);
+          if (parsed.history) {
+            historySnapshots = Array.isArray(parsed.history) ? parsed.history : [];
+            saveHistoryState();
+            renderHistory();
+          }
+          if (parsed.draft) applyFormData(parsed.draft);
+          fillSettingsForm();
+          refreshProjectSelect(getLastActiveProject());
+          update();
+        } else {
+          applyFormData(parsed.data ? parsed.data : parsed);
+        }
+      } catch (err) {
+        alert('Could not import this JSON file. Please use a valid export from KimiaPro Project KPI Tracker.');
+        console.error(err);
+      } finally {
+        event.target.value = '';
+      }
+    });
+
+    $('saveSnapshotBtn').addEventListener('click', () => {
+      const metrics = currentMetrics();
+      const now = new Date();
+      historySnapshots.push({
+        name: $('snapshotLabel').value.trim() || $('projectName').value || 'Unnamed Project',
+        note: $('snapshotNote') ? $('snapshotNote').value.trim() : '',
+        budget: metrics.budget,
+        totalCost: metrics.totalCost,
+        hoursUsedPct: metrics.hoursUsedPct,
+        margin: metrics.margin,
+        statusLabel: metrics.status.label,
+        savedAt: now.toISOString(),
+        dateLabel: now.toLocaleString('en-CA', {
+          year: 'numeric', month: 'short', day: 'numeric',
+          hour: 'numeric', minute: '2-digit'
+        }),
+        shortLabel: now.toLocaleDateString('en-CA', {
+          month: 'short', day: 'numeric'
+        })
+      });
+      if (historySnapshots.length > 12) historySnapshots = historySnapshots.slice(-12);
+      saveHistoryState();
+      renderHistory();
+      const snapInput = $('snapshotLabel');
+      if (snapInput) snapInput.value = '';
+      const snapNote = $('snapshotNote');
+      if (snapNote) snapNote.value = '';
+    });
+
+    $('exportHistoryBtn').addEventListener('click', () => {
+      const payload = {
+        app: 'KimiaPro Project KPI Tracker History',
+        version: '1.2',
+        exportedAt: new Date().toISOString(),
+        snapshots: historySnapshots
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'kimiapro-project-history.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    $('clearHistoryBtn').addEventListener('click', () => {
+      historySnapshots = [];
+      try {
+        localStorage.removeItem('kimiapro-kpi-tracker-history');
+      } catch (err) {
+        console.warn('Could not clear history.', err);
+      }
+      renderHistory();
+    });
+
+    const kpiToggleBtn = $('kpiToggleBtn');
+    const kpiStrip = $('kpiStrip');
+
+    function syncKpiStripMode() {
+      if (!kpiStrip || !kpiToggleBtn) return;
+      const compact = window.innerWidth <= 1200;
+      if (compact) {
+        if (!kpiStrip.dataset.userToggled) {
+          kpiStrip.classList.add('collapsed');
+          kpiToggleBtn.setAttribute('aria-expanded', 'false');
+        }
+      } else {
+        kpiStrip.classList.remove('collapsed');
+        kpiToggleBtn.setAttribute('aria-expanded', 'true');
+        delete kpiStrip.dataset.userToggled;
+      }
+    }
+
+    if (kpiToggleBtn && kpiStrip) {
+      kpiToggleBtn.addEventListener('click', () => {
+        const collapsed = kpiStrip.classList.toggle('collapsed');
+        kpiToggleBtn.setAttribute('aria-expanded', String(!collapsed));
+        kpiStrip.dataset.userToggled = '1';
+        syncStickyOffsets();
+      });
+      window.addEventListener('resize', () => {
+        syncKpiStripMode();
+        syncStickyOffsets();
+      });
+      syncKpiStripMode();
+    }
+
+    $('resetBtn').addEventListener('click', () => {
+      try {
+        localStorage.removeItem('kimiapro-kpi-tracker');
+      } catch (err) {
+        console.warn('Could not clear local save.', err);
+      }
+      clearProjectForm();
+    });
+
+    $('newProjectBtn').addEventListener('click', () => {
+      clearProjectForm();
+      refreshProjectSelect('');
+    });
+    $('newProjectBtnEditor').addEventListener('click', () => {
+      clearProjectForm();
+      refreshProjectSelect('');
+    });
+
+    $('dashboardViewBtn').addEventListener('click', () => setScreen('dashboard'));
+    $('editorViewBtn').addEventListener('click', () => setScreen('editor'));
+    $('darkModeBtn').addEventListener('click', () => setDarkMode(!document.body.classList.contains('dark-mode')));
+
+    $('saveProjectBtn').addEventListener('click', () => {
+      saveCurrentProject();
+    });
+    $('saveProjectBtnEditor').addEventListener('click', () => {
+      saveCurrentProject();
+    });
+
+    $('deleteProjectBtn').addEventListener('click', () => {
+      deleteSelectedProject();
+    });
+    $('deleteProjectBtnEditor').addEventListener('click', () => {
+      deleteSelectedProject();
+    });
+
+    $('projectSelect').addEventListener('change', (event) => {
+      loadSelectedProject(event.target.value);
+    });
+    $('projectSelectEditor').addEventListener('change', (event) => {
+      loadSelectedProject(event.target.value);
+    });
+
+    $('dashboardTableBody').addEventListener('click', (event) => {
+      const btn = event.target.closest('[data-project-load]');
+      if (!btn) return;
+      loadSelectedProject(btn.getAttribute('data-project-load'));
+    });
+
+    function syncStickyOffsets() {
+      const hero = document.querySelector('.hero');
+      const root = document.documentElement;
+      if (!hero || !root) return;
+      const heroHeight = Math.ceil(hero.offsetHeight);
+      root.style.setProperty('--hero-offset', `${heroHeight}px`);
+    }
+
+    function runSelfChecks() {
+      const check1 = (() => {
+        const revenue = 1000;
+        const totalCost = 800;
+        const profit = revenue - totalCost;
+        const margin = revenue > 0 ? (profit / revenue) * 100 : 0;
+        return profit === 200 && Math.abs(margin - 20) < 0.0001;
+      })();
+      const check2 = (() => getStatus(85).className === 'warn')();
+      const check3 = (() => {
+        const revenue = 0;
+        const profit = -50;
+        const margin = revenue > 0 ? (profit / revenue) * 100 : 0;
+        return margin === 0;
+      })();
+      console.assert(check1, 'Self-check failed: profit/margin calculation');
+      console.assert(check2, 'Self-check failed: status threshold');
+      console.assert(check3, 'Self-check failed: zero revenue margin handling');
+    }
+
+    $('toolLauncherBtn').addEventListener('click', () => setToolPopOpen(true));
+    $('toolPopCloseBtn').addEventListener('click', () => setToolPopOpen(false));
+    $('openSettingsBtn').addEventListener('click', () => {
+      setToolPopOpen(false);
+      setSettingsOpen(true);
+    });
+    $('settingsCloseBtn').addEventListener('click', () => setSettingsOpen(false));
+    $('settingsModal').addEventListener('click', (event) => {
+      if (event.target === $('settingsModal')) setSettingsOpen(false);
+    });
+    $('saveSettingsBtn').addEventListener('click', () => {
+      const settings = {
+        companyName: $('settingsCompanyName').value.trim() || 'KimiaPro',
+        preparedBy: $('settingsPreparedBy').value.trim(),
+        defaultCurrency: $('settingsDefaultCurrency').value || 'CAD',
+        defaultRate: num($('settingsDefaultRate').value),
+        warningPct: num($('settingsWarningPct').value) || 80,
+        overPct: num($('settingsOverPct').value) || 100,
+        riskMediumMarginPct: num($('settingsRiskMediumMargin').value) || 30,
+        riskHighMarginPct: num($('settingsRiskHighMargin').value) || 15,
+        riskCriticalMarginPct: num($('settingsRiskCriticalMargin').value) || 5,
+        riskMediumCostPct: num($('settingsRiskMediumCost').value) || 90,
+        riskHighCostPct: num($('settingsRiskHighCost').value) || 100,
+        riskCriticalCostPct: num($('settingsRiskCriticalCost').value) || 110,
+        riskMediumHoursPct: num($('settingsRiskMediumHours').value) || 95,
+        riskHighHoursPct: num($('settingsRiskHighHours').value) || 105,
+        riskCriticalHoursPct: num($('settingsRiskCriticalHours').value) || 115
+      };
+      saveAppSettings(settings);
+      if (isFreshProjectDraft()) {
+        applySettingsToCurrentForm();
+      }
+      update();
+      refreshProjectSelect(getLastActiveProject());
+      setSettingsOpen(false);
+    });
+    $('resetSettingsBtn').addEventListener('click', () => {
+      saveAppSettings({ ...defaultAppSettings });
+      fillSettingsForm();
+      if (isFreshProjectDraft()) {
+        applyDefaultSettingsToForm(true);
+      }
+      update();
+      refreshProjectSelect(getLastActiveProject());
+    });
+    document.addEventListener('click', (event) => {
+      const pop = $('toolPop');
+      const launcher = $('toolLauncherBtn');
+      if (!pop || !pop.classList.contains('open')) return;
+      if (pop.contains(event.target) || launcher.contains(event.target)) return;
+      setToolPopOpen(false);
+    });
+
+    $('helpFab').addEventListener('click', () => setHelpOpen(true));
+    $('helpCloseBtn').addEventListener('click', () => setHelpOpen(false));
+    $('helpModal').addEventListener('click', (event) => {
+      if (event.target === $('helpModal')) setHelpOpen(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        setHelpOpen(false);
+        setToolPopOpen(false);
+        setSettingsOpen(false);
+      }
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+      });
+    }
+
+    try { setDarkMode(localStorage.getItem('kimiapro-dark-mode') === '1'); } catch (err) {}
+    try { setScreen(localStorage.getItem('kimiapro-screen-mode') || 'dashboard'); } catch (err) { setScreen('dashboard'); }
+    applyDefaultSettingsToForm(false);
+    loadState();
+    loadHistoryState();
+    refreshProjectSelect();
+    runSelfChecks();
+    update();
+    renderHistory();
+    syncStickyOffsets();
+  </script>
+</body>
+</html>
