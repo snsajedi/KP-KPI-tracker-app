@@ -1,0 +1,19 @@
+{
+  "name": "kimiapro-kpi-tracker-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "KimiaPro KPI Tracker packaged for Capacitor iOS/Android",
+  "scripts": {
+    "serve": "python3 -m http.server 4173 -d www",
+    "cap:sync": "npx cap sync",
+    "cap:ios": "npx cap open ios",
+    "cap:android": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/cli": "^7.4.3",
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/ios": "^7.4.3",
+    "chart.js": "^4.4.2"
+  }
+}
