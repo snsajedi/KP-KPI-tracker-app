@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">KimiaPro KPI Tracker</string>
+    <string name="title_activity_main">KimiaPro KPI Tracker</string>
+    <string name="package_name">ca.kimiapro.kpitracker</string>
+    <string name="custom_url_scheme">ca.kimiapro.kpitracker</string>
+</resources>
